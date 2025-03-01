@@ -7,25 +7,25 @@ import {
 import { 
     doc, 
     setDoc, 
-    getDoc 
+    getDoc,
+    collection,
+    getDocs,
+    deleteDoc,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
-    // Constantes
-    const MONTHS = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
-
     // Referencias DOM
-    const yearBtn = document.getElementById('yearDisplay');
-    const monthBtn = document.getElementById('currentMonthDisplay');
-    const counterDisplay = document.getElementById('count');
-    const incrementButton = document.getElementById('incrementButton');
-    const decrementButton = document.getElementById('decrementButton');
+    const currentGroupHeader = document.getElementById('currentGroupHeader');
+    const currentGroupTitle = document.getElementById('currentGroupTitle');
+    const noGroupSelected = document.getElementById('noGroupSelected');
+    const newGroupForm = document.getElementById('newGroupForm');
+    const newCounterForm = document.getElementById('newCounterForm');
     const authSection = document.getElementById('authSection');
     const counterSection = document.getElementById('counterSection');
+    const groupNavigation = document.getElementById('groupNavigation');
+    const deleteGroupBtn = document.getElementById('deleteGroupBtn');
 
     // Referencias de autenticación
     const loginForm = document.getElementById('loginForm');
@@ -34,103 +34,299 @@ document.addEventListener('DOMContentLoaded', () => {
     const switchToLogin = document.getElementById('switchToLogin');
     const logoutButton = document.getElementById('logoutButton');
 
+    // Estado de la aplicación
+    let currentGroupId = null;
+    let currentGroup = null;
+    let lastVisitedGroupId = null;
+
     // Verificar que todos los elementos existen
-    if (!yearBtn || !monthBtn || !counterDisplay || !incrementButton || !decrementButton || !authSection || !counterSection || !loginForm || !registerForm || !switchToRegister || !switchToLogin || !logoutButton) {
+    if (!currentGroupHeader || !currentGroupTitle || !noGroupSelected || !newGroupForm || !newCounterForm || 
+        !authSection || !counterSection || !loginForm || !registerForm || !switchToRegister || 
+        !switchToLogin || !logoutButton || !groupNavigation || !deleteGroupBtn) {
         console.error('No se pudieron encontrar todos los elementos necesarios');
         return;
     }
 
-    // Variables de estado
-    let currentCount = 0;
-    let selectedDate = new Date();
-    const currentDate = new Date();
+    // Funciones para manejar grupos
+    async function createGroup(title, theme) {
+        try {
+            const groupId = Date.now().toString();
+            const groupDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId);
+            await setDoc(groupDoc, {
+                title,
+                theme,
+                createdAt: new Date().toISOString(),
+                order: Date.now()
+            });
+            await loadGroups();
+            navigateToGroup(groupId);
 
-    // Funciones de utilidad
-    function getMonthKey(date) {
-        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            // Cerrar el modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newGroupModal'));
+            modal.hide();
+        } catch (error) {
+            console.error('Error al crear el grupo:', error);
+            alert('Error al crear el grupo');
+        }
     }
 
-    // Funciones de la interfaz de fecha
-    function setupYearList() {
-        yearBtn.textContent = selectedDate.getFullYear();
-    }
-
-    function setupMonthList() {
-        monthBtn.textContent = MONTHS[selectedDate.getMonth()];
-    }
-
-    function updateDateDisplay() {
-        yearBtn.textContent = selectedDate.getFullYear();
-        monthBtn.textContent = MONTHS[selectedDate.getMonth()];
-    }
-
-    // Event Listeners
-    yearBtn.onclick = (e) => {
-        e.stopPropagation();
-        selectedDate.setFullYear(parseInt(yearBtn.textContent));
-        updateDateDisplay();
-        loadUserCounter();
-    };
-
-    monthBtn.onclick = (e) => {
-        e.stopPropagation();
-        selectedDate.setMonth(MONTHS.indexOf(monthBtn.textContent));
-        updateDateDisplay();
-        loadUserCounter();
-    };
-
-    // Funciones del contador
-    async function updateCounter(increment) {
-        if (getMonthKey(selectedDate) !== getMonthKey(currentDate)) {
-            alert('Solo puedes modificar el contador del mes actual');
+    async function deleteGroup(groupId) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este grupo y todos sus contadores?')) {
             return;
         }
 
         try {
-            currentCount += increment;
-            counterDisplay.textContent = currentCount;
+            // Primero eliminar todos los contadores del grupo
+            const countersRef = collection(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters');
+            const querySnapshot = await getDocs(countersRef);
+            const deletions = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+            await Promise.all(deletions);
+
+            // Luego eliminar el grupo
+            const groupDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId);
+            await deleteDoc(groupDoc);
             
-            const monthKey = getMonthKey(currentDate);
-            const counterDoc = doc(db, 'users', auth.currentUser.uid, 'counters', monthKey);
-            await setDoc(counterDoc, { count: currentCount });
+            currentGroupId = null;
+            currentGroup = null;
+            lastVisitedGroupId = null;
+            localStorage.removeItem('lastVisitedGroupId');
+            
+            await loadGroups();
+            updateGroupDisplay();
+        } catch (error) {
+            console.error('Error al eliminar el grupo:', error);
+            alert('Error al eliminar el grupo');
+        }
+    }
+
+    // Funciones para manejar contadores
+    async function createCounter(groupId, title, theme) {
+        try {
+            const counterId = Date.now().toString();
+            const counterDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters', counterId);
+            await setDoc(counterDoc, {
+                title,
+                theme,
+                count: 0,
+                isMinimized: false,
+                createdAt: new Date().toISOString(),
+                order: Date.now()
+            });
+            await loadCounters(groupId);
+
+            // Cerrar el modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newCounterModal'));
+            modal.hide();
+        } catch (error) {
+            console.error('Error al crear el contador:', error);
+            alert('Error al crear el contador');
+        }
+    }
+
+    async function updateCounter(groupId, counterId, data) {
+        try {
+            const counterDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters', counterId);
+            await updateDoc(counterDoc, data);
+            await loadCounters(groupId);
         } catch (error) {
             console.error('Error al actualizar el contador:', error);
             alert('Error al actualizar el contador');
         }
     }
 
-    // Event Listeners para el contador
-    incrementButton.onclick = () => updateCounter(1);
-    decrementButton.onclick = () => updateCounter(-1);
-
-    // Inicialización
-    updateDateDisplay();
-
-    // Cargar contador
-    async function loadUserCounter() {
-        if (!auth.currentUser) return;
-
+    async function deleteCounter(groupId, counterId) {
         try {
-            const monthKey = getMonthKey(selectedDate);
-            const counterDoc = doc(db, 'users', auth.currentUser.uid, 'counters', monthKey);
-            const docSnap = await getDoc(counterDoc);
-            
-            if (docSnap.exists()) {
-                currentCount = docSnap.data().count;
-            } else {
-                currentCount = 0;
-                if (monthKey === getMonthKey(currentDate)) {
-                    await setDoc(counterDoc, { count: 0 });
-                }
-            }
-            
-            counterDisplay.textContent = currentCount;
+            const counterDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters', counterId);
+            await deleteDoc(counterDoc);
+            await loadCounters(groupId);
         } catch (error) {
-            console.error('Error al cargar el contador:', error);
+            console.error('Error al eliminar el contador:', error);
+            alert('Error al eliminar el contador');
         }
     }
 
-    // Función de inicio de sesión
+    async function toggleCounterMinimized(groupId, counterId, isMinimized) {
+        await updateCounter(groupId, counterId, { isMinimized });
+    }
+
+    // Funciones de carga y navegación
+    async function loadGroups() {
+        if (!auth.currentUser) return;
+
+        try {
+            const groupsRef = collection(db, 'users', auth.currentUser.uid, 'groups');
+            const querySnapshot = await getDocs(groupsRef);
+            
+            groupNavigation.innerHTML = '';
+            
+            const groups = [];
+            querySnapshot.forEach((doc) => {
+                groups.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Ordenar grupos por orden
+            groups.sort((a, b) => a.order - b.order);
+
+            groups.forEach(group => {
+                const groupButton = document.createElement('button');
+                groupButton.className = `btn ${currentGroupId === group.id ? 'btn-primary' : 'btn-outline-primary'} me-2`;
+                groupButton.innerHTML = `
+                    <span class="group-title">${group.title}</span>
+                    <span class="theme-indicator ${group.theme}-theme"></span>
+                `;
+                groupButton.onclick = () => navigateToGroup(group.id);
+                groupNavigation.appendChild(groupButton);
+            });
+
+            // Si no hay grupo seleccionado y hay grupos, seleccionar el último visitado o el primero
+            if (!currentGroupId && groups.length > 0) {
+                const targetGroupId = lastVisitedGroupId || groups[0].id;
+                const targetGroup = groups.find(g => g.id === targetGroupId);
+                if (targetGroup) {
+                    navigateToGroup(targetGroupId);
+                }
+            }
+
+            // Actualizar la visualización del grupo actual
+            updateGroupDisplay();
+        } catch (error) {
+            console.error('Error al cargar los grupos:', error);
+        }
+    }
+
+    async function loadCounters(groupId) {
+        if (!auth.currentUser || !groupId) return;
+
+        try {
+            const countersRef = collection(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters');
+            const querySnapshot = await getDocs(countersRef);
+            
+            const countersList = document.getElementById('countersList');
+            countersList.innerHTML = '';
+            
+            const counters = [];
+            querySnapshot.forEach((doc) => {
+                counters.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Ordenar contadores por orden
+            counters.sort((a, b) => a.order - b.order);
+
+            counters.forEach(counter => {
+                const counterElement = document.createElement('div');
+                counterElement.className = `counter-item card mb-3 ${counter.theme}-theme`;
+                counterElement.innerHTML = `
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">${counter.title}</h5>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-secondary toggle-minimize">
+                                    <i class="fas fa-${counter.isMinimized ? 'expand' : 'compress'}-alt"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="counter-content ${counter.isMinimized ? 'd-none' : ''}">
+                            <div class="counter-controls">
+                                <button class="btn btn-danger btn-sm decrement">-</button>
+                                <span class="mx-3 count">${counter.count}</span>
+                                <button class="btn btn-success btn-sm increment">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Event listeners
+                const incrementBtn = counterElement.querySelector('.increment');
+                const decrementBtn = counterElement.querySelector('.decrement');
+                const deleteBtn = counterElement.querySelector('.delete');
+                const toggleBtn = counterElement.querySelector('.toggle-minimize');
+
+                incrementBtn.addEventListener('click', () => 
+                    updateCounter(groupId, counter.id, { count: counter.count + 1 }));
+                decrementBtn.addEventListener('click', () => 
+                    updateCounter(groupId, counter.id, { count: counter.count - 1 }));
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm('¿Estás seguro de que quieres eliminar este contador?')) {
+                        deleteCounter(groupId, counter.id);
+                    }
+                });
+                toggleBtn.addEventListener('click', () => 
+                    toggleCounterMinimized(groupId, counter.id, !counter.isMinimized));
+
+                countersList.appendChild(counterElement);
+            });
+        } catch (error) {
+            console.error('Error al cargar los contadores:', error);
+        }
+    }
+
+    async function navigateToGroup(groupId) {
+        currentGroupId = groupId;
+        lastVisitedGroupId = groupId;
+        localStorage.setItem('lastVisitedGroupId', groupId);
+
+        // Cargar información del grupo
+        if (groupId) {
+            const groupDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId);
+            const docSnap = await getDoc(groupDoc);
+            if (docSnap.exists()) {
+                currentGroup = { id: groupId, ...docSnap.data() };
+            }
+        }
+
+        await loadGroups();
+        await loadCounters(groupId);
+        updateGroupDisplay();
+    }
+
+    function updateGroupDisplay() {
+        if (currentGroup) {
+            currentGroupHeader.style.display = 'block';
+            noGroupSelected.style.display = 'none';
+            currentGroupTitle.textContent = currentGroup.title;
+            currentGroupHeader.className = `current-group-header mb-4 ${currentGroup.theme}-theme`;
+        } else {
+            currentGroupHeader.style.display = 'none';
+            noGroupSelected.style.display = 'block';
+        }
+    }
+
+    // Event listeners para formularios
+    newGroupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('newGroupTitle').value.trim();
+        const theme = document.getElementById('newGroupTheme').value;
+        if (title) {
+            createGroup(title, theme);
+            newGroupForm.reset();
+        }
+    });
+
+    newCounterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!currentGroupId) {
+            alert('Por favor, selecciona o crea un grupo primero');
+            return;
+        }
+        const title = document.getElementById('newCounterTitle').value.trim();
+        const theme = document.getElementById('newCounterTheme').value;
+        if (title) {
+            createCounter(currentGroupId, title, theme);
+            newCounterForm.reset();
+        }
+    });
+
+    // Event listener para eliminar grupo
+    deleteGroupBtn.addEventListener('click', () => {
+        if (currentGroupId) {
+            deleteGroup(currentGroupId);
+        }
+    });
+
+    // Funciones de autenticación
     async function loginUser(e) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value;
@@ -145,27 +341,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Función de registro
     async function registerUser(e) {
         e.preventDefault();
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await createUserWithEmailAndPassword(auth, email, password);
             console.log('Registro exitoso');
-            
-            const monthKey = getMonthKey(new Date());
-            await setDoc(doc(db, 'users', userCredential.user.uid, 'counters', monthKey), {
-                count: 0
-            });
         } catch (error) {
             console.error('Error en el registro:', error);
             alert('Error en el registro: ' + error.message);
         }
     }
 
-    // Función de cierre de sesión
     async function logout() {
         try {
             await signOut(auth);
@@ -192,29 +381,26 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.style.display = 'block';
     });
 
-    // Observer de autenticación modificado
+    // Observer de autenticación
     auth.onAuthStateChanged(async (user) => {
         console.log('Estado de autenticación cambiado:', user ? 'autenticado' : 'no autenticado');
-        const authSection = document.getElementById('authSection');
-        const counterSection = document.getElementById('counterSection');
         
         if (user) {
             console.log('Usuario autenticado:', user.email);
             authSection.style.display = 'none';
             counterSection.style.display = 'block';
-            selectedDate = new Date();
-            updateDateDisplay();
-            await loadUserCounter();
+            lastVisitedGroupId = localStorage.getItem('lastVisitedGroupId');
+            await loadGroups();
         } else {
             console.log('Usuario no autenticado');
             authSection.style.display = 'block';
             counterSection.style.display = 'none';
             loginForm.style.display = 'block';
             registerForm.style.display = 'none';
-            currentCount = 0;
-            if (counterDisplay) {
-                counterDisplay.textContent = '0';
-            }
+            currentGroupId = null;
+            currentGroup = null;
+            lastVisitedGroupId = null;
+            updateGroupDisplay();
         }
     });
 });
