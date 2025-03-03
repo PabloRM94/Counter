@@ -360,8 +360,19 @@ document.addEventListener('DOMContentLoaded', () => {
             noGroupSelected.style.display = 'block';
         }
     }
+    
+    // Evento para el botón de editar
+    const editGroupBtn = document.getElementById('editGroupBtn');
+    editGroupBtn.addEventListener('click', () => {
+        if (currentGroupId) {
+            editGroupTitle(currentGroupId, currentGroupTitle.textContent);
+        } else {
+            console.error("No se ha seleccionado un grupo válido.");
+        }
+    });
+        
+     // Función para editar el título del grupo
     async function editGroupTitle(groupId, currentTitle) {
-        // Crear un campo de entrada para editar el título
         const titleElement = document.getElementById('currentGroupTitle');
         const input = document.createElement('input');
         input.type = 'text';
@@ -369,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.className = 'form-control';
         titleElement.replaceWith(input);
         input.focus();
-    
+
         // Guardar cambios al perder el foco
         input.addEventListener('blur', async () => {
             const newTitle = input.value.trim();
@@ -380,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
             input.replaceWith(titleElement);
             titleElement.textContent = newTitle || currentTitle;
         });
-    
+
         // Guardar cambios al presionar Enter
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -391,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function updateGroupName(groupId, newTitle) {
         try {
-            const groupDoc = doc(db, 'users', auth.currentUser .uid, 'groups', groupId);
+            const groupDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId);
             await updateDoc(groupDoc, { title: newTitle });
             await loadGroups(); // Recargar los grupos para reflejar el cambio
             showAlert('Nombre del grupo actualizado correctamente', 'success');
@@ -400,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert('Error al actualizar el grupo: ' + error.message, 'error');
         }
     }
+
 
     // Event listeners para formularios
     newGroupForm.addEventListener('submit', (e) => {
