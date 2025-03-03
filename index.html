@@ -59,7 +59,7 @@
                             <h3 id="currentGroupTitle">Nombre del Grupo</h3>
                         </div>
                         <div class="btn-group">
-                            <button class="btn btn-outline-secondary rename-group">
+                            <button class="btn btn-outline-secondary rename-group" id="editGroupBtn
                                 <i class="fas fa-edit"></i> Editar
                             </button>
                             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newCounterModal">
@@ -120,29 +120,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal para editar grupo -->
-    <div class="modal fade" id="editGroupModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Grupo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="editGroupForm">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="editGroupTitle" class="form-label">Nuevo Título del Grupo</label>
-                            <input type="text" class="form-control" id="editGroupTitle" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    
     <!-- Modal para nuevo contador -->
     <div class="modal fade" id="newCounterModal" tabindex="-1">
         <div class="modal-dialog">

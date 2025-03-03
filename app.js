@@ -69,7 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error al crear el grupo');
         }
     }
-
+    async function selectGroup(groupId) {
+        currentGroupId = groupId; // Asignar el ID del grupo seleccionado
+        currentGroupTitle = document.getElementById('currentGroupTitle'); // Referencia al elemento del DOM
+        await loadCounters(groupId);
+        updateGroupDisplay();
+    }
     async function deleteGroup(groupId) {
         if (!confirm('¿Estás seguro de que quieres eliminar este grupo y todos sus contadores?')) {
             return;
@@ -295,8 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 // Minimizar/Maximizar contador
                 cardBody.addEventListener('click', (e) => {
-                    // Evitar que el evento se active si el usuario está editando el título
-                    if (!e.target.closest('.btn-group') && !e.target.closest('input')) {
+                    // Evitar que el evento se active si el usuario está interactuando con los botones de control
+                    if (!e.target.closest('.btn-group') && !e.target.closest('.increment') && !e.target.closest('.decrement')) {
                         toggleCounterMinimized(groupId, counter.id, !counter.isMinimized);
                     }
                 });
@@ -344,10 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 // Asignar el evento de clic al botón
                 renameGroupBtn.addEventListener('click', () => {
-                    console.log('Botón de editar grupo clickeado'); // Verificar en la consola
-                    if (currentGroupId && currentGroupTitle) {
-                        openEditGroupModal(currentGroupId, currentGroupTitle.textContent);
-                    }
+                    editGroupTitle(currentGroupId, currentGroupTitle.textContent);
                 });
     
                 // Añadir el botón al DOM
@@ -358,37 +360,44 @@ document.addEventListener('DOMContentLoaded', () => {
             noGroupSelected.style.display = 'block';
         }
     }
-    // Función para abrir el modal de edición de grupo
-    function openEditGroupModal(groupId, currentTitle) {
-        const editGroupTitleInput = document.getElementById('editGroupTitle');
-        editGroupTitleInput.value = currentTitle;
-
-        const editGroupForm = document.getElementById('editGroupForm');
-        editGroupForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const newTitle = editGroupTitleInput.value.trim();
+    async function editGroupTitle(groupId, currentTitle) {
+        // Crear un campo de entrada para editar el título
+        const titleElement = document.getElementById('currentGroupTitle');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentTitle;
+        input.className = 'form-control';
+        titleElement.replaceWith(input);
+        input.focus();
+    
+        // Guardar cambios al perder el foco
+        input.addEventListener('blur', async () => {
+            const newTitle = input.value.trim();
             if (newTitle && newTitle !== currentTitle) {
                 await updateGroupName(groupId, newTitle);
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editGroupModal'));
-                modal.hide();
             }
-        };
-
-        // Mostrar el modal
-        const modal = new bootstrap.Modal(document.getElementById('editGroupModal'));
-        modal.show();
+            // Reemplazar el campo de entrada con el título actualizado
+            input.replaceWith(titleElement);
+            titleElement.textContent = newTitle || currentTitle;
+        });
+    
+        // Guardar cambios al presionar Enter
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                input.blur(); // Forzar el guardado al presionar Enter
+            }
+        });
     }
 
-    // Función para actualizar el nombre del grupo en Firestore
     async function updateGroupName(groupId, newTitle) {
         try {
-            const groupDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId);
+            const groupDoc = doc(db, 'users', auth.currentUser .uid, 'groups', groupId);
             await updateDoc(groupDoc, { title: newTitle });
             await loadGroups(); // Recargar los grupos para reflejar el cambio
             showAlert('Nombre del grupo actualizado correctamente', 'success');
         } catch (error) {
             console.error('Error al actualizar el grupo:', error);
-            showAlert('Error al actualizar el grupo', 'error');
+            showAlert('Error al actualizar el grupo: ' + error.message, 'error');
         }
     }
 
@@ -423,6 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteGroup(currentGroupId);
         }
     });
+
+    
 
     // Funciones de autenticación
     async function loginUser(e) {
