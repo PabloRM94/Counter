@@ -12,7 +12,7 @@
     <div class="container">
         <!-- Sección de autenticación -->
         <div id="authSection" class="auth-container">
-            <h2 class="text-center mb-4">Mis Contadores</h2>
+            <h2 class="text-center mb-4">Counter Chuleta</h2>
             
             <!-- Formulario de inicio de sesión -->
             <form id="loginForm" class="auth-form">
@@ -21,7 +21,6 @@
                 <button type="submit" id="loginButton" class="btn btn-primary w-100 mb-2">Iniciar Sesión</button>
                 <button type="button" id="switchToRegister" class="btn btn-link w-100">¿No tienes cuenta? Regístrate</button>
             </form>
-
             <!-- Formulario de registro -->
             <form id="registerForm" class="auth-form" style="display: none;">
                 <input type="email" id="registerEmail" class="form-control mb-3" placeholder="Email" required>
@@ -30,26 +29,22 @@
                 <button type="button" id="switchToLogin" class="btn btn-link w-100">¿Ya tienes cuenta? Inicia sesión</button>
             </form>
         </div>
-
         <!-- Sección de contadores -->
         <div id="counterSection" class="counter-container" style="display: none;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <button id="logoutButton" class="btn btn-outline-danger">Cerrar Sesión</button>
-            </div>
-
-            <!-- Navegación de grupos -->
+                        <!-- Navegación de grupos -->
             <div class="groups-section mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4>Mis Grupos</h4>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroupModal">
-                        <i class="fas fa-plus"></i> Nuevo Grupo
+                        <i class="fas fa-plus"></i> Nuevo Grupo de Contadores
+                    </button>
+                    <button id="toggleDarkMode" class="btn btn-outline-secondary">
+                        <i class="fas fa-moon"></i> 
                     </button>
                 </div>
                 <div id="groupNavigation" class="groups-navigation mb-4">
                     <!-- Los grupos se añadirán aquí dinámicamente -->
                 </div>
             </div>
-
             <!-- Contenido del grupo actual -->
             <div id="currentGroupContent">
                 <!-- Título del grupo actual -->
@@ -68,24 +63,24 @@
                             <button class="btn btn-danger" id="deleteGroupBtn">
                                 <i class="fas fa-trash"></i> Eliminar Grupo
                             </button>
-                         </div>
+                        </div>
                     </div>
                 </div>
-
                 <!-- Mensaje cuando no hay grupo seleccionado -->
                 <div id="noGroupSelected" class="text-center py-5">
                     <i class="fas fa-arrow-up fa-2x mb-3 text-muted"></i>
                     <h4 class="text-muted">Selecciona un grupo o crea uno nuevo</h4>
                 </div>
-
                 <!-- Lista de contadores del grupo actual -->
                 <div id="countersList">
                     <!-- Los contadores se añadirán aquí dinámicamente -->
                 </div>
             </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <button id="logoutButton" class="btn btn-outline-danger">Cerrar Sesión</button>
+            </div>
         </div>
     </div>
-
     <!-- Modal para nuevo grupo -->
     <div class="modal fade" id="newGroupModal" tabindex="-1">
         <div class="modal-dialog">
@@ -103,12 +98,12 @@
                         <div class="mb-3">
                             <label for="newGroupTheme" class="form-label">Tema</label>
                             <select class="form-select" id="newGroupTheme">
-                                <option value="default">Por defecto</option>
-                                <option value="nature">Naturaleza</option>
-                                <option value="tech">Tecnología</option>
-                                <option value="sport">Deportes</option>
-                                <option value="work">Trabajo</option>
-                                <option value="hobby">Hobby</option>
+                                <option value="default">Blanco</option>
+                                <option value="nature">Verde</option>
+                                <option value="tech">Azul</option>
+                                <option value="sport">Naranja</option>
+                                <option value="work">Morado</option>
+                                <option value="hobby">Rojo</option>
                             </select>
                         </div>
                     </div>
@@ -138,12 +133,12 @@
                         <div class="mb-3">
                             <label for="newCounterTheme" class="form-label">Tema</label>
                             <select class="form-select" id="newCounterTheme">
-                                <option value="default">Por defecto</option>
-                                <option value="nature">Naturaleza</option>
-                                <option value="tech">Tecnología</option>
-                                <option value="sport">Deportes</option>
-                                <option value="work">Trabajo</option>
-                                <option value="hobby">Hobby</option>
+                                <option value="default">Blanco</option>
+                                <option value="nature">Verde</option>
+                                <option value="tech">Azul</option>
+                                <option value="sport">Naranja</option>
+                                <option value="work">Morado</option>
+                                <option value="hobby">Rojo</option>
                             </select>
                         </div>
                     </div>
@@ -155,7 +150,6 @@
             </div>
         </div>
     </div>
-
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="firebase-config.js"></script>
