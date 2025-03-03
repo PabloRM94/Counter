@@ -491,3 +491,15 @@ body {
     color: var(--primary-color);
     font-weight: bold;
 }
+
+/* Estilos para el botón de cambiar nombre */
+.btn-outline-secondary.rename-group, .btn-outline-secondary.rename {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary.rename-group:hover, .btn-outline-secondary.rename:hover {
+    color: #5a6268;
+    border-color: #5a6268;
+    background-color: #e2e6ea;
+}
