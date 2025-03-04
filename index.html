@@ -29,23 +29,13 @@
                 <button type="button" id="switchToLogin" class="btn btn-link w-100">¿Ya tienes cuenta? Inicia sesión</button>
             </form>
         </div>
+    
         
         <!-- Sección de contadores -->
         <div id="counterSection" class="counter-container" style="display: none;">
-            <div class="groups-section mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroupModal">
-                        <i class="fas fa-plus"></i> Nuevo Grupo de Contadores
-                    </button>
-                    <button id="toggleDarkMode" class="btn btn-outline-secondary">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </div>
-                <div id="groupNavigation" class="groups-navigation mb-4">
-                    <!-- Los grupos se añadirán aquí dinámicamente -->
-                </div>
-            </div>
-
+            <button id="toggleDarkMode" class="btn btn-outline-secondary">
+                <i class="fas fa-moon"></i>
+            </button>
             <div id="statisticsSection" class="statistics-section mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3>Estadísticas</h3>
@@ -72,32 +62,40 @@
                         </li>
                     </ul>
                 </div>
-
-                <div class="tab-content" id="chartTabsContent">
-                    <!-- Dynamically rendered charts (use different IDs for each chart) -->
-                    <div class="tab-pane fade show active" id="distribution" role="tabpanel" aria-labelledby="distribution-tab">
-                        <div class="chart-container">
-                            <canvas id="statisticsChart1"></canvas>
-                        </div>
+            </div>
+            
+            <div class="tab-content" id="chartTabsContent">
+                <div class="tab-pane fade show active" id="distribution" role="tabpanel" aria-labelledby="distribution-tab">
+                    <div class="chart-container">
+                    <canvas id="statisticsChart1"></canvas>
                     </div>
-                    <div class="tab-pane fade" id="trend" role="tabpanel" aria-labelledby="trend-tab">
-                        <div class="chart-container">
-                            <canvas id="statisticsChart2"></canvas>
-                        </div>
+                </div>
+                <div class="tab-pane fade" id="trend" role="tabpanel" aria-labelledby="trend-tab">
+                    <div class="chart-container">
+                    <canvas id="statisticsChart2"></canvas>
                     </div>
-                    <div class="tab-pane fade" id="pie" role="tabpanel" aria-labelledby="pie-tab">
-                        <div class="chart-container">
-                            <canvas id="statisticsChart3"></canvas>
-                        </div>
+                </div>
+                <div class="tab-pane fade" id="pie" role="tabpanel" aria-labelledby="pie-tab">
+                    <div class="chart-container">
+                    <canvas id="statisticsChart3"></canvas>
                     </div>
-                    <div class="tab-pane fade" id="radar" role="tabpanel" aria-labelledby="radar-tab">
-                        <div class="chart-container">
-                            <canvas id="statisticsChart4"></canvas>
-                        </div>
+                </div>
+                <div class="tab-pane fade" id="radar" role="tabpanel" aria-labelledby="radar-tab">
+                    <div class="chart-container">
+                    <canvas id="statisticsChart4"></canvas>
                     </div>
                 </div>
             </div>
-
+            <div class="groups-section mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroupModal">
+                        <i class="fas fa-plus"></i> Nuevo Grupo de Contadores
+                    </button>
+                </div>
+                <div id="groupNavigation" class="groups-navigation mb-4">
+                    <!-- Los grupos se añadirán aquí dinámicamente -->
+                </div>
+            </div>
             <div id="currentGroupContent">
                 <div id="currentGroupHeader" class="current-group-header mb-4" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center">
@@ -115,24 +113,23 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="noGroupSelected" class="text-center py-5">
                     <i class="fas fa-arrow-up fa-2x mb-3 text-muted"></i>
                     <h4 class="text-muted">Selecciona un grupo o crea uno nuevo</h4>
                 </div>
-
                 <div id="countersList">
                     <!-- Los contadores se añadirán aquí dinámicamente -->
                 </div>
             </div>
-
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <button id="logoutButton" class="btn btn-outline-danger">Cerrar Sesión</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal para nuevo grupo -->
+
+
+<!-- Modal para nuevo grupo -->
     <div class="modal fade" id="newGroupModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -167,7 +164,9 @@
         </div>
     </div>
 
-    <!-- Modal para nuevo contador -->
+
+
+<!-- Modal para nuevo contador -->
     <div class="modal fade" id="newCounterModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -201,6 +200,8 @@
             </div>
         </div>
     </div>
+
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
