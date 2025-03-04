@@ -13,6 +13,7 @@ import {
     deleteDoc,
     updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { updateStatistics } from './statistics.js';
 
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const counterDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters', counterId);
             await updateDoc(counterDoc, data);
             await loadCounters(groupId); // Recargar los contadores para reflejar el cambio
+            await updateStatistics(groupId);
             showAlert('Contador actualizado correctamente', 'success');
         } catch (error) {
             console.error('Error al actualizar el contador:', error);
@@ -297,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
         await loadGroups(); // Recargar la lista de grupos
         await loadCounters(groupId); // Recargar los contadores del grupo seleccionado
+        await updateStatistics(groupId); // Actualizar las estadísticas
         updateGroupDisplay(); // Actualizar la interfaz
     }
     function updateGroupDisplay() {
