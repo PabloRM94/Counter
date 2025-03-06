@@ -6,36 +6,70 @@ import {
 
 let currentChart = null;
 let currentChartType = 'distribution';
+let charts = {
+    distribution: null,
+    trend: null,
+    pie: null,
+    radar: null
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar el primer gráfico cuando se carga la página
+    const currentGroupId = document.querySelector('.group-button.active')?.dataset.groupId;
+    if (currentGroupId) {
+        updateStatistics(currentGroupId);
+    }
+
+    // Manejar cambios de pestaña
     const chartTabs = document.getElementById('chartTabs');
+    if (chartTabs) {
+        chartTabs.addEventListener('shown.bs.tab', async (e) => {
+            const targetTab = e.target.getAttribute('aria-controls');
+            
+            // Actualizar el tipo de gráfico
+            currentChartType = targetTab;
 
-    // Cambiar gráfico al seleccionar una pestaña
-    chartTabs.addEventListener('shown.bs.tab', async (e) => {
-        const targetTab = e.target.getAttribute('aria-controls'); // Obtener el id del tab seleccionado
-        switch (targetTab) {
-            case 'distribution':
-                currentChartType = 'distribution';
-                break;
-            case 'trend':
-                currentChartType = 'trend';
-                break;
-            case 'pie':
-                currentChartType = 'pie';
-                break;
-            case 'radar':
-                currentChartType = 'radar';
-                break;
-            default:
-                currentChartType = 'distribution';
-        }
-        const currentGroupId = document.querySelector('.group-button.active')?.dataset.groupId;
-        if (currentGroupId) {
-            await updateStatistics(currentGroupId); // Actualizar el gráfico
-        }
-    });
+            // Obtener datos actuales
+            const currentGroupId = document.querySelector('.group-button.active')?.dataset.groupId;
+            if (currentGroupId) {
+                await updateStatistics(currentGroupId);
+            }
+        });
+    }
 });
-
 function getChartConfig(type, labels, data) {
+    const baseConfig = {
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: 2,
+            animation: {
+                duration: 1000
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15,
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 20,
+                    right: 20,
+                    bottom: 20,
+                    left: 20
+                }
+            }
+        }
+    };
+
     const configs = {
         distribution: {
             type: 'bar',
@@ -50,14 +84,13 @@ function getChartConfig(type, labels, data) {
                 }]
             },
             options: {
-                responsive: true,
-                animation: {
-                    duration: 1000 // Animation duration in milliseconds
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Distribución de Contadores'
+                ...baseConfig.options,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
                     }
                 }
             }
@@ -182,10 +215,18 @@ function getChartConfig(type, labels, data) {
             }
         };
     });
+    // Merge base config with specific chart config
+    Object.keys(configs).forEach(key => {
+        configs[key].options = {
+            ...baseConfig.options,
+            ...configs[key].options
+        };
+    });
+
     return configs[type];
 }
 
-async function updateStatistics(groupId) {
+async function initializeAllCharts(groupId) {
     if (!auth.currentUser || !groupId) return;
     try {
         const countersRef = collection(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters');
@@ -194,51 +235,46 @@ async function updateStatistics(groupId) {
         querySnapshot.forEach((doc) => {
             counters.push({ id: doc.id, ...doc.data() });
         });
-        if (counters.length === 0) {
-            if (currentChart) {
-                currentChart.destroy();
-                currentChart = null;
-            }
-            return;
-        }
+
         const labels = counters.map(counter => counter.title);
         const values = counters.map(counter => counter.count);
-        await createOrUpdateChart(labels, values); // Actualizar el gráfico
+
+        // Destruir gráficos existentes
+        Object.values(charts).forEach(chart => {
+            if (chart) {
+                chart.destroy();
+            }
+        });
+
+        // Inicializar cada tipo de gráfico
+        const chartTypes = ['distribution', 'trend', 'pie', 'radar'];
+        chartTypes.forEach(type => {
+            const canvasId = `statisticsChart${
+                type === 'distribution' ? '1' : 
+                type === 'trend' ? '2' : 
+                type === 'pie' ? '3' : '4'
+            }`;
+            
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const config = getChartConfig(type, labels, values);
+                charts[type] = new Chart(ctx, config);
+            }
+        });
+    } catch (error) {
+        console.error('Error inicializando gráficos:', error);
+    }
+}
+
+// Modificar la función updateStatistics para usar initializeAllCharts
+async function updateStatistics(groupId) {
+    if (!auth.currentUser || !groupId) return;
+    try {
+        await initializeAllCharts(groupId);
     } catch (error) {
         console.error('Error actualizando estadísticas:', error);
     }
 }
-
-async function createOrUpdateChart(labels, data) {
-    try {
-        const canvas = document.getElementById('statisticsChart');
-        if (!canvas) {
-            console.error('Canvas no encontrado');
-            return;
-        }
-        const ctx = canvas.getContext('2d');
-        // Destruir el gráfico anterior si existe
-        if (currentChart) {
-            currentChart.destroy();
-        }
-        // Crear un nuevo gráfico con el tipo seleccionado
-        const config = getChartConfig(currentChartType, labels, data);
-        currentChart = new Chart(ctx, config);
-    } catch (error) {
-        console.error('Error creando/actualizando gráfico:', error);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const chartSelector = document.getElementById('chartSelector');
-    
-    chartSelector.addEventListener('change', (e) => {
-        currentChartType = e.target.value;
-        const currentGroupId = document.querySelector('.group-button.active')?.dataset.groupId;
-        if (currentGroupId) {
-            updateStatistics(currentGroupId);
-        }
-    });
-});
-
+// Eliminar la función createOrUpdateChart ya que no la necesitamos más
 export { updateStatistics };

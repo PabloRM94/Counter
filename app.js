@@ -490,3 +490,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Función para mostrar alertas al usuario
+function showAlert(message, type = 'error') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertDiv);
+
+    // Eliminar la alerta después de 3 segundos
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
