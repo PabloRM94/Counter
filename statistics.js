@@ -28,13 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
             default:
                 currentChartType = 'distribution';
         }
-
         const currentGroupId = document.querySelector('.group-button.active')?.dataset.groupId;
         if (currentGroupId) {
             await updateStatistics(currentGroupId); // Actualizar el gráfico
         }
     });
 });
+
 function getChartConfig(type, labels, data) {
     const configs = {
         distribution: {
@@ -133,7 +133,6 @@ function getChartConfig(type, labels, data) {
         }
     };
 
-    // Add download button to all chart configurations
     Object.values(configs).forEach(config => {
         if (!config.options.plugins) {
             config.options.plugins = {};
@@ -170,7 +169,7 @@ function getChartConfig(type, labels, data) {
         };
     });
 
-    // Add common options to all chart types
+
     Object.values(configs).forEach(config => {
         if (!config.options) config.options = {};
         config.options.animation = {
@@ -188,16 +187,13 @@ function getChartConfig(type, labels, data) {
 
 async function updateStatistics(groupId) {
     if (!auth.currentUser || !groupId) return;
-
     try {
         const countersRef = collection(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters');
         const querySnapshot = await getDocs(countersRef);
-
         const counters = [];
         querySnapshot.forEach((doc) => {
             counters.push({ id: doc.id, ...doc.data() });
         });
-
         if (counters.length === 0) {
             if (currentChart) {
                 currentChart.destroy();
@@ -205,10 +201,8 @@ async function updateStatistics(groupId) {
             }
             return;
         }
-
         const labels = counters.map(counter => counter.title);
         const values = counters.map(counter => counter.count);
-
         await createOrUpdateChart(labels, values); // Actualizar el gráfico
     } catch (error) {
         console.error('Error actualizando estadísticas:', error);
@@ -222,14 +216,11 @@ async function createOrUpdateChart(labels, data) {
             console.error('Canvas no encontrado');
             return;
         }
-
         const ctx = canvas.getContext('2d');
-
         // Destruir el gráfico anterior si existe
         if (currentChart) {
             currentChart.destroy();
         }
-
         // Crear un nuevo gráfico con el tipo seleccionado
         const config = getChartConfig(currentChartType, labels, data);
         currentChart = new Chart(ctx, config);
@@ -238,7 +229,6 @@ async function createOrUpdateChart(labels, data) {
     }
 }
 
-// Remove duplicate event listener
 document.addEventListener('DOMContentLoaded', () => {
     const chartSelector = document.getElementById('chartSelector');
     

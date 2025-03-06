@@ -225,21 +225,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const deleteBtn = counterElement.querySelector('.delete');
                 const renameBtn = counterElement.querySelector('.rename');
                 const cardBody = counterElement.querySelector('.card-body');
- // Incrementar contador
+// Incrementar contador
                 incrementBtn.addEventListener('click', () =>
                     updateCounter(groupId, counter.id, { count: counter.count + 1 })
                 );
- // Decrementar contador
+// Decrementar contador
                 decrementBtn.addEventListener('click', () =>
                     updateCounter(groupId, counter.id, { count: counter.count - 1 })
                 );
- // Eliminar contador
+// Eliminar contador
                 deleteBtn.addEventListener('click', () => {
                     if (confirm('¿Estás seguro de que quieres eliminar este contador?')) {
                         deleteCounter(groupId, counter.id);
                     }
                 });
- // Editar nombre del contador
+// Editar nombre del contador
                 renameBtn.addEventListener('click', (e) => {
                     e.stopPropagation(); // Evitar que el evento se propague al card-body
                     const titleElement = counterElement.querySelector('.card-title');
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     input.className = 'form-control';
                     titleElement.replaceWith(input);
                     input.focus();
- // Guardar cambios al hacer clic fuera del campo de texto
+// Guardar cambios al hacer clic fuera del campo de texto
                     input.addEventListener('blur', () => {
                         const newName = input.value.trim();
                         if (newName && newName !== currentTitle) {
@@ -259,22 +259,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         input.replaceWith(titleElement);
                         titleElement.textContent = newName || currentTitle;
                     });
- // Guardar cambios al presionar Enter
+// Guardar cambios al presionar Enter
                     input.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
                             input.blur(); // Guardar cambios al presionar Enter
                         }
                     });
                 });
-    
-                // Minimizar/Maximizar contador
+// Minimizar/Maximizar contador
                 cardBody.addEventListener('click', (e) => {
                     // Evitar que el evento se active si el usuario está interactuando con los botones de control
                     if (!e.target.closest('.btn-group') && !e.target.closest('.increment') && !e.target.closest('.decrement')) {
                         toggleCounterMinimized(groupId, counter.id, !counter.isMinimized);
                     }
                 });
-    
                 countersList.appendChild(counterElement);
             });
         } catch (error) {
@@ -282,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert('Error al cargar los contadores', 'error');
         }
     }
+
     async function navigateToGroup(groupId) {
         currentGroupId = groupId;
         lastVisitedGroupId = groupId;
@@ -302,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await updateStatistics(groupId); // Actualizar las estadísticas
         updateGroupDisplay(); // Actualizar la interfaz
     }
+
     function updateGroupDisplay() {
         if (currentGroup) {
             currentGroupHeader.style.display = 'block';
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
             noGroupSelected.style.display = 'block';
         }
     }   
- // Evento para el botón de editar
+// Evento para el botón de editar
     const editGroupBtn = document.getElementById('editGroupBtn');
     editGroupBtn.addEventListener('click', () => {
         if (currentGroupId) {
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("No se ha seleccionado un grupo válido.");
         }
     });   
- // Función para editar el título del grupo
+// Función para editar el título del grupo
     async function editGroupTitle(groupId, currentTitle) {
         const titleElement = document.getElementById('currentGroupTitle');
         const input = document.createElement('input');
@@ -346,8 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.className = 'form-control';
         titleElement.replaceWith(input);
         input.focus();
-
-        // Guardar cambios al perder el foco
+// Guardar cambios al perder el foco
         input.addEventListener('blur', async () => {
             const newTitle = input.value.trim();
             if (newTitle && newTitle !== currentTitle) {
@@ -357,14 +356,14 @@ document.addEventListener('DOMContentLoaded', () => {
             input.replaceWith(titleElement);
             titleElement.textContent = newTitle || currentTitle;
         });
-
-        // Guardar cambios al presionar Enter
+// Guardar cambios al presionar Enter
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 input.blur(); // Forzar el guardado al presionar Enter
             }
         });
     }
+
     async function updateGroupName(groupId, newTitle) {
         try {
             const groupDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId);
@@ -376,9 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert('Error al actualizar el grupo: ' + error.message, 'error');
         }
     }
-
-
- // Event listeners para formularios
+// Event listeners para formularios
     newGroupForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const title = document.getElementById('newGroupTitle').value.trim();
@@ -401,18 +398,17 @@ document.addEventListener('DOMContentLoaded', () => {
             newCounterForm.reset();
         }
     });
-    // Event listener para eliminar grupo
+// Event listener para eliminar grupo
     deleteGroupBtn.addEventListener('click', () => {
         if (currentGroupId) {
             deleteGroup(currentGroupId);
         }
     });
- // Funciones de autenticación
+// Funciones de autenticación
     async function loginUser(e) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
-
         try {
             await signInWithEmailAndPassword(auth, email, password);
             console.log('Inicio de sesión exitoso');
@@ -421,11 +417,11 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error en el inicio de sesión: ' + error.message);
         }
     }
+
     async function registerUser(e) {
         e.preventDefault();
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
-
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             console.log('Registro exitoso');
@@ -434,6 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error en el registro: ' + error.message);
         }
     }
+
     async function logout() {
         try {
             await signOut(auth);
@@ -443,12 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error al cerrar sesión');
         }
     }
- // Event listeners para autenticación
+// Event listeners para autenticación
     loginForm.addEventListener('submit', loginUser);
     registerForm.addEventListener('submit', registerUser);
     logoutButton.addEventListener('click', logout);
-
- // Cambiar entre formularios
+// Cambiar entre formularios
     switchToRegister.addEventListener('click', () => {
         loginForm.style.display = 'none';
         registerForm.style.display = 'block';
@@ -457,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
         registerForm.style.display = 'none';
         loginForm.style.display = 'block';
     });
- // Observer de autenticación
+// Observer de autenticación
     auth.onAuthStateChanged(async (user) => {
         console.log('Estado de autenticación cambiado:', user ? 'autenticado' : 'no autenticado');
         
@@ -479,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGroupDisplay();
         }
     });
- // Evento para alternar entre modo claro y oscuro
+// Evento para alternar entre modo claro y oscuro
     const toggleDarkModeBtn = document.getElementById('toggleDarkMode');
     toggleDarkModeBtn.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
