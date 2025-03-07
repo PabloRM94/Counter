@@ -15,9 +15,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { updateStatistics } from './statistics.js';
 
+
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
- // Referencias DOM
+    console.log('Initializing application...');
+    
+    // Referencias DOM
     const currentGroupHeader = document.getElementById('currentGroupHeader');
     const currentGroupTitle = document.getElementById('currentGroupTitle');
     const noGroupSelected = document.getElementById('noGroupSelected');
@@ -37,10 +40,31 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGroupId = null;
     let currentGroup = null;
     let lastVisitedGroupId = null;
- // Verificar que todos los elementos existen
-    if (!currentGroupHeader || !currentGroupTitle || !noGroupSelected || !newGroupForm || !newCounterForm || 
-        !authSection || !counterSection || !loginForm || !registerForm || !switchToRegister || 
-        !switchToLogin || !logoutButton || !groupNavigation || !deleteGroupBtn) {
+ // Verificar elementos críticos y mostrar advertencias específicas
+    const missingElements = [];
+    
+    if (!authSection) missingElements.push('authSection');
+    if (!counterSection) missingElements.push('counterSection');
+    if (!loginForm) missingElements.push('loginForm');
+    if (!registerForm) missingElements.push('registerForm');
+    
+    if (missingElements.length > 0) {
+        console.error('Elementos críticos no encontrados:', missingElements.join(', '));
+        return;
+    }
+    
+    // Verificar elementos no críticos con advertencias
+    if (!currentGroupHeader) console.warn('Elemento no encontrado: currentGroupHeader');
+    if (!currentGroupTitle) console.warn('Elemento no encontrado: currentGroupTitle');
+    if (!noGroupSelected) console.warn('Elemento no encontrado: noGroupSelected');
+    if (!newGroupForm) console.warn('Elemento no encontrado: newGroupForm');
+    if (!newCounterForm) console.warn('Elemento no encontrado: newCounterForm');
+    if (!groupNavigation) console.warn('Elemento no encontrado: groupNavigation');
+    if (!deleteGroupBtn) console.warn('Elemento no encontrado: deleteGroupBtn');
+    if (!switchToRegister) console.warn('Elemento no encontrado: switchToRegister');
+    if (!switchToLogin) console.warn('Elemento no encontrado: switchToLogin');
+    if (!logoutButton) console.warn('Elemento no encontrado: logoutButton');
+    if (!switchToRegister || !switchToLogin || !logoutButton || !groupNavigation || !deleteGroupBtn) {
         console.error('No se pudieron encontrar todos los elementos necesarios');
         return;
     }
@@ -58,13 +82,30 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             await loadGroups();
             navigateToGroup(groupId);
-
-            // Cerrar el modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('newGroupModal'));
-            modal.hide();
+            // Update modal handling with safer approach
+            const modalElement = document.getElementById('newGroupModal');
+            if (modalElement && bootstrap) {
+                try {
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    } else {
+                        const newModal = new bootstrap.Modal(modalElement);
+                        newModal.hide();
+                    }
+                } catch (error) {
+                    console.warn('Error handling modal:', error);
+                    // Fallback method to hide modal
+                    modalElement.classList.remove('show');
+                    modalElement.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) backdrop.remove();
+                }
+            }
         } catch (error) {
             console.error('Error al crear el grupo:', error);
-            alert('Error al crear el grupo');
+            showAlert('Error al crear el grupo', 'error');
         }
     }
     async function deleteGroup(groupId) {
@@ -105,9 +146,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 order: Date.now()
             });
             await loadCounters(groupId);
-            // Cerrar el modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('newCounterModal'));
-            modal.hide();
+            // Update modal handling with safer approach
+            const modalElement = document.getElementById('newCounterModal');
+            if (modalElement) {
+                try {
+                    const modalInstance =Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    } else {
+                        const newModal = new Modal(modalElement);
+                        newModal.hide();
+                    }
+                } catch (error) {
+                    console.warn('Error handling modal:', error);
+                    // Fallback method to hide modal
+                    // For createGroup function:
+                    const groupModalElement = document.getElementById('newGroupModal');
+                    if (groupModalElement) {
+                    // Manual approach to hide the modal
+                    groupModalElement.classList.remove('show');
+                    groupModalElement.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) backdrop.remove();
+                    }
+                    // For createCounter function:
+                    const modalElement = document.getElementById('newCounterModal');
+                    if (modalElement) {
+                    // Manual approach to hide the modal
+                    modalElement.classList.remove('show');
+                    groupModalElement.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) backdrop.remove();
+                    }
+                }
+            }
         } catch (error) {
             console.error('Error al crear el contador:', error);
             alert('Error al crear el contador');
@@ -330,13 +404,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }   
 // Evento para el botón de editar
     const editGroupBtn = document.getElementById('editGroupBtn');
-    editGroupBtn.addEventListener('click', () => {
-        if (currentGroupId) {
-            editGroupTitle(currentGroupId, currentGroupTitle.textContent);
-        } else {
-            console.error("No se ha seleccionado un grupo válido.");
-        }
-    });   
+    // Add null check before attaching event listener
+    if (editGroupBtn) {
+        editGroupBtn.addEventListener('click', () => {
+            if (currentGroupId) {
+                editGroupTitle(currentGroupId, currentGroupTitle.textContent);
+            } else {
+                console.error("No se ha seleccionado un grupo válido.");
+            }
+        });
+    } else {
+        console.warn('Elemento no encontrado: editGroupBtn');
+    }
 // Función para editar el título del grupo
     async function editGroupTitle(groupId, currentTitle) {
         const titleElement = document.getElementById('currentGroupTitle');
@@ -376,28 +455,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 // Event listeners para formularios
-    newGroupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const title = document.getElementById('newGroupTitle').value.trim();
-        const theme = document.getElementById('newGroupTheme').value;
-        if (title) {
-            createGroup(title, theme);
-            newGroupForm.reset();
-        }
-    });
-    newCounterForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (!currentGroupId) {
-            alert('Por favor, selecciona o crea un grupo primero');
-            return;
-        }
-        const title = document.getElementById('newCounterTitle').value.trim();
-        const theme = document.getElementById('newCounterTheme').value;
-        if (title) {
-            createCounter(currentGroupId, title, theme);
-            newCounterForm.reset();
-        }
-    });
+    if (newGroupForm) {
+        newGroupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('newGroupTitle').value.trim();
+            const theme = document.getElementById('newGroupTheme').value;
+            if (title) {
+                createGroup(title, theme);
+                newGroupForm.reset();
+            }
+        });
+    } else {
+        console.warn('Elemento no encontrado: newGroupForm');
+    }
+    if (newCounterForm) {
+        newCounterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!currentGroupId) {
+                alert('Por favor, selecciona o crea un grupo primero');
+                return;
+            }
+            const title = document.getElementById('newCounterTitle').value.trim();
+            const theme = document.getElementById('newCounterTheme').value;
+            if (title) {
+                createCounter(currentGroupId, title, theme);
+                newCounterForm.reset();
+            }
+        });
+    } else {
+        console.warn('Elemento no encontrado: newCounterForm');
+    }
 // Event listener para eliminar grupo
     deleteGroupBtn.addEventListener('click', () => {
         if (currentGroupId) {

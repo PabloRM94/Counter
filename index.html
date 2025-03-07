@@ -7,58 +7,80 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="description" content="Aplicación para gestionar contadores personalizados">
 </head>
 
 <body>
-    <div class="container">
+    <div class="container main-container">
         <!-- Sección de autenticación -->
         <div id="authSection" class="auth-container">
             <h2 class="text-center mb-4">Counter Chuleta</h2>
             
             <!-- Formulario de inicio de sesión -->
             <form id="loginForm" class="auth-form">
-                <input type="email" id="loginEmail" class="form-control mb-3" placeholder="Email" required>
-                <input type="password" id="loginPassword" class="form-control mb-3" placeholder="Contraseña" required>
-                <button type="submit" id="loginButton" class="btn btn-primary w-100 mb-2">Iniciar Sesión</button>
+                <div class="form-floating mb-3">
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Email" required>
+                    <label for="loginEmail">Email</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Contraseña" required>
+                    <label for="loginPassword">Contraseña</label>
+                </div>
+                <button type="submit" id="loginButton" class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                </button>
                 <button type="button" id="switchToRegister" class="btn btn-link w-100">¿No tienes cuenta? Regístrate</button>
             </form>
+            
             <!-- Formulario de registro -->
             <form id="registerForm" class="auth-form" style="display: none;">
-                <input type="email" id="registerEmail" class="form-control mb-3" placeholder="Email" required>
-                <input type="password" id="registerPassword" class="form-control mb-3" placeholder="Contraseña" required>
-                <button type="submit" id="registerButton" class="btn btn-primary w-100 mb-2">Registrarse</button>
+                <div class="form-floating mb-3">
+                    <input type="email" id="registerEmail" class="form-control" placeholder="Email" required>
+                    <label for="registerEmail">Email</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Contraseña" required>
+                    <label for="registerPassword">Contraseña</label>
+                </div>
+                <button type="submit" id="registerButton" class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-user-plus me-2"></i>Registrarse
+                </button>
                 <button type="button" id="switchToLogin" class="btn btn-link w-100">¿Ya tienes cuenta? Inicia sesión</button>
             </form>
         </div>
 
-
         <!-- Sección de contadores -->
         <div id="counterSection" class="counter-container" style="display: none;">
-            <button id="toggleDarkMode" class="btn btn-outline-secondary">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="app-header d-flex justify-content-between align-items-center mb-4">
+                <h1 class="app-title">Mis Contadores</h1>
+                <button id="toggleDarkMode" class="btn theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            
             <div id="statisticsSection" class="statistics-section mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3>Estadísticas</h3>
                     <ul class="nav nav-tabs" id="chartTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="distribution-tab" data-bs-toggle="tab" data-bs-target="#distribution" type="button" role="tab" aria-controls="distribution" aria-selected="true">
-                                Distribución
+                                <i class="fas fa-chart-bar me-1"></i>Distribución
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="trend-tab" data-bs-toggle="tab" data-bs-target="#trend" type="button" role="tab" aria-controls="trend" aria-selected="false">
-                                Tendencia
+                                <i class="fas fa-chart-line me-1"></i>Tendencia
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pie-tab" data-bs-toggle="tab" data-bs-target="#pie" type="button" role="tab" aria-controls="pie" aria-selected="false">
-                                Circular
+                                <i class="fas fa-chart-pie me-1"></i>Circular
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="radar-tab" data-bs-toggle="tab" data-bs-target="#radar" type="button" role="tab" aria-controls="radar" aria-selected="false">
-                                Radar
+                                <i class="fas fa-spider me-1"></i>Radar
                             </button>
                         </li>
                     </ul>
@@ -89,7 +111,7 @@
             </div>
             <div class="groups-section mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroupModal">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroupModal" id="newGroupForm"> 
                         <i class="fas fa-plus"></i> Nuevo Grupo de Contadores
                     </button>
                 </div>
@@ -105,7 +127,7 @@
                             <button class="btn btn-outline-secondary rename-group" id="editGroupBtn">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newCounterModal">
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newCounterModal" id="newCounterForm">
                                 <i class="fas fa-plus"></i> Añadir Contador
                             </button>
                             <button class="btn btn-danger" id="deleteGroupBtn">
@@ -128,81 +150,62 @@
         </div>
     </div>
 
-
-
-<!-- Modal para nuevo grupo -->
-    <div class="modal fade" id="newGroupModal" tabindex="-1">
+    <!-- Modales permanecen igual... -->
+    <!-- Modal para crear nuevo grupo -->
+    <div class="modal fade" id="newGroupModal" tabindex="-1" aria-labelledby="newGroupModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Nuevo Grupo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="newGroupModalLabel">Crear Nuevo Grupo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="newGroupForm">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form id="createGroupForm">
                         <div class="mb-3">
-                            <label for="newGroupTitle" class="form-label">Título del Grupo</label>
-                            <input type="text" class="form-control" id="newGroupTitle" required>
+                            <label for="groupName" class="form-label">Nombre del Grupo</label>
+                            <input type="text" class="form-control" id="groupName" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="newGroupTheme" class="form-label">Tema</label>
-                            <select class="form-select" id="newGroupTheme">
-                                <option value="default">Blanco</option>
-                                <option value="nature">Verde</option>
-                                <option value="tech">Azul</option>
-                                <option value="sport">Naranja</option>
-                                <option value="work">Morado</option>
-                                <option value="hobby">Rojo</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Crear Grupo</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveGroupBtn">Guardar</button>
+                </div>
             </div>
         </div>
     </div>
 
-
-
-<!-- Modal para nuevo contador -->
-    <div class="modal fade" id="newCounterModal" tabindex="-1">
+    <!-- Modal para crear nuevo contador -->
+    <div class="modal fade" id="newCounterModal" tabindex="-1" aria-labelledby="newCounterModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Nuevo Contador</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="newCounterModalLabel">Crear Nuevo Contador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="newCounterForm">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form id="createCounterForm">
                         <div class="mb-3">
-                            <label for="newCounterTitle" class="form-label">Título del Contador</label>
-                            <input type="text" class="form-control" id="newCounterTitle" required>
+                            <label for="counterName" class="form-label">Nombre del Contador</label>
+                            <input type="text" class="form-control" id="counterName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="newCounterTheme" class="form-label">Tema</label>
-                            <select class="form-select" id="newCounterTheme">
-                                <option value="default">Blanco</option>
-                                <option value="nature">Verde</option>
-                                <option value="tech">Azul</option>
-                                <option value="sport">Naranja</option>
-                                <option value="work">Morado</option>
-                                <option value="hobby">Rojo</option>
-                            </select>
+                            <label for="counterInitialValue" class="form-label">Valor Inicial</label>
+                            <input type="number" class="form-control" id="counterInitialValue" value="0">
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Crear Contador</button>
-                    </div>
-                </form>
+                        <div class="mb-3">
+                            <label for="counterColor" class="form-label">Color</label>
+                            <input type="color" class="form-control form-control-color" id="counterColor" value="#0d6efd">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveCounterBtn">Guardar</button>
+                </div>
             </div>
         </div>
     </div>
-
-
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -210,5 +213,6 @@
     <script type="module" src="app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="statistics.js"></script>
+
 </body>
 </html>
