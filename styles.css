@@ -148,6 +148,31 @@ body {
     box-shadow: var(--shadow);
 }
 
+/* Estilos mejorados para los números de contador */
+.counter-content .count {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    padding: 0.2rem 1rem;
+    min-width: 80px;
+    display: inline-block;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.counter-item:hover .count {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+body.dark-mode .counter-content .count {
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
 /* Botón de tema oscuro */
 .theme-toggle {
     width: 40px;
@@ -160,31 +185,28 @@ body {
     border: 1px solid var(--border-color);
     color: var(--text-color);
     transition: var(--transition);
+    position: relative;
+    top: 0;
+    margin-left: 10px;
 }
 
 .theme-toggle:hover {
     background-color: var(--border-color);
     transform: rotate(15deg);
 }
-
-/* Estadísticas */
-.statistics-section {
-    background-color: var(--card-bg);
+/* Add these styles for the statistics container */
+.statistics-container {
+    background-color: var(--bg-color);
+    border-radius: 10px;
     padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .chart-container {
     position: relative;
-    min-height: 400px;
-    width: 100%;
+    height: 300px;
     margin-bottom: 20px;
-    background-color: var(--card-bg);
-    padding: 15px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
 }
 
 /* Pestañas */
@@ -276,13 +298,48 @@ body {
     box-shadow: 0 6px 12px rgba(0,0,0,0.1);
 }
 
-/* Temas para contadores */
-.counter-item.default-theme { border-left-color: var(--primary-color); }
-.counter-item.nature-theme { border-left-color: #4caf50; }
-.counter-item.tech-theme { border-left-color: #2196f3; }
-.counter-item.sport-theme { border-left-color: #ff9800; }
-.counter-item.work-theme { border-left-color: #9c27b0; }
-.counter-item.hobby-theme { border-left-color: #f44336; }
+/* Temas para contadores - Actualizado para afectar el color del número */
+.counter-item.default-theme { 
+    border-left-color: var(--primary-color); 
+}
+.counter-item.default-theme .count { 
+    color: var(--primary-color); 
+}
+
+.counter-item.nature-theme { 
+    border-left-color: #4caf50; 
+}
+.counter-item.nature-theme .count { 
+    color: #2e7d32; 
+}
+
+.counter-item.tech-theme { 
+    border-left-color: #2196f3; 
+}
+.counter-item.tech-theme .count { 
+    color: #1565c0; 
+}
+
+.counter-item.sport-theme { 
+    border-left-color: #ff9800; 
+}
+.counter-item.sport-theme .count { 
+    color: #e65100; 
+}
+
+.counter-item.work-theme { 
+    border-left-color: #9c27b0; 
+}
+.counter-item.work-theme .count { 
+    color: #7b1fa2; 
+}
+
+.counter-item.hobby-theme { 
+    border-left-color: #f44336; 
+}
+.counter-item.hobby-theme .count { 
+    color: #c62828; 
+}
 
 /* Estilos para el grupo actual */
 .current-group-header {
@@ -366,7 +423,6 @@ body {
     .auth-container {
         padding: 1.5rem;
     }
-    
     .chart-container {
         min-height: 300px;
     }
@@ -382,16 +438,13 @@ body {
         font-size: 0.9rem;
         padding: 8px 12px;
     }
-    
     .counter-display {
         font-size: 4rem;
     }
-    
     .btn-group {
         flex-direction: column;
         align-items: flex-end;
     }
-    
     .btn-group .btn {
         margin-left: 0;
         margin-bottom: 5px;
@@ -403,7 +456,6 @@ body {
     .main-container {
         padding: 10px;
     }
-    
     .chart-container {
         min-height: 250px;
         padding: 10px;
@@ -412,26 +464,21 @@ body {
     .statistics-section {
         padding: 10px;
     }
-    
     .counter-display {
         font-size: 3.5rem;
     }
-    
     .counter-controls button {
         width: 50px;
         height: 50px;
     }
-    
     .current-group-header .d-flex {
         flex-direction: column;
         align-items: flex-start !important;
     }
-    
     .current-group-header .btn-group {
         margin-top: 10px;
         width: 100%;
     }
-    
     .current-group-header .btn-group .btn {
         width: 100%;
         margin-bottom: 5px;

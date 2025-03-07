@@ -14,8 +14,17 @@ import {
     updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { updateStatistics } from './statistics.js';
+// Add this to your existing JavaScript code
+// Toggle between counter and statistics sections
+document.getElementById('toggleStatistics').addEventListener('click', function() {
+    document.getElementById('counterSection').style.display = 'none';
+    document.getElementById('statisticsSection').style.display = 'block';
+});
 
-
+document.getElementById('backToCounters').addEventListener('click', function() {
+    document.getElementById('statisticsSection').style.display = 'none';
+    document.getElementById('counterSection').style.display = 'block';
+});
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing application...');
@@ -133,24 +142,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     // Funciones para manejar contadores
-    async function createCounter(groupId, title, theme) {
+    async function createCounter(groupId, title, color) {
         try {
             const counterId = Date.now().toString();
             const counterDoc = doc(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters', counterId);
             await setDoc(counterDoc, {
                 title,
-                theme,
-                count: 0,
+                count: parseInt(document.getElementById('counterInitialValue').value) || 0,
+                color: document.getElementById('counterColor').value, // Store the color value
                 isMinimized: false,
                 createdAt: new Date().toISOString(),
                 order: Date.now()
             });
             await loadCounters(groupId);
-            // Update modal handling with safer approach
             const modalElement = document.getElementById('newCounterModal');
-            if (modalElement) {
+            if (modalElement && bootstrap) {
                 try {
-                    const modalInstance =Modal.getInstance(modalElement);
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
                     if (modalInstance) {
                         modalInstance.hide();
                     } else {
@@ -159,8 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch (error) {
                     console.warn('Error handling modal:', error);
-                    // Fallback method to hide modal
-                    // For createGroup function:
                     const groupModalElement = document.getElementById('newGroupModal');
                     if (groupModalElement) {
                     // Manual approach to hide the modal
@@ -252,26 +258,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     async function loadCounters(groupId) {
-        if (!auth.currentUser || !groupId) return;
-    
+        if (!groupId) return;
         try {
             const countersRef = collection(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters');
             const querySnapshot = await getDocs(countersRef);
-    
             const countersList = document.getElementById('countersList');
-            countersList.innerHTML = ''; // Limpiar la lista antes de renderizar
+            countersList.innerHTML = '';
     
             const counters = [];
             querySnapshot.forEach((doc) => {
                 counters.push({ id: doc.id, ...doc.data() });
             });
     
-            // Ordenar contadores por orden
+            // Sort counters by order
             counters.sort((a, b) => a.order - b.order);
     
             counters.forEach(counter => {
                 const counterElement = document.createElement('div');
-                counterElement.className = `counter-item card mb-3 ${counter.theme}-theme`;
+                counterElement.className = 'counter-item card mb-3';
+                counterElement.dataset.counterId = counter.id;
+                
+                // Apply custom color if it exists
+                if (counter.color) {
+                    counterElement.style.setProperty('--counter-color', counter.color);
+                    counterElement.style.borderLeftColor = counter.color;
+                }
                 counterElement.innerHTML = `
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -280,6 +291,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <button class="btn btn-sm btn-outline-secondary rename">
                                     <i class="fas fa-edit"></i>
                                 </button>
+                                <button class="btn btn-sm btn-outline-secondary change-color">
+                                    <i class="fas fa-palette"></i>
                                 <button class="btn btn-sm btn-outline-danger delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -288,59 +301,68 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="counter-content ${counter.isMinimized ? 'd-none' : ''}">
                             <div class="counter-controls">
                                 <button class="btn btn-danger btn-sm decrement">-</button>
-                                <span class="mx-3 count">${counter.count}</span>
+                                <span class="count" style="${counter.color ? 'color:'+counter.color+';' : ''}">${counter.count}</span>
                                 <button class="btn btn-success btn-sm increment">+</button>
                             </div>
                         </div>
                     </div>`;    
-// Event listeners
+                // Event listeners
                 const incrementBtn = counterElement.querySelector('.increment');
                 const decrementBtn = counterElement.querySelector('.decrement');
                 const deleteBtn = counterElement.querySelector('.delete');
                 const renameBtn = counterElement.querySelector('.rename');
                 const cardBody = counterElement.querySelector('.card-body');
-// Incrementar contador
+                const colorBtn = counterElement.querySelector('.change-color');
+                 // Incrementar contador
                 incrementBtn.addEventListener('click', () =>
                     updateCounter(groupId, counter.id, { count: counter.count + 1 })
                 );
-// Decrementar contador
+                // Decrementar contador
                 decrementBtn.addEventListener('click', () =>
                     updateCounter(groupId, counter.id, { count: counter.count - 1 })
                 );
-// Eliminar contador
+                // Eliminar contador
                 deleteBtn.addEventListener('click', () => {
                     if (confirm('¿Estás seguro de que quieres eliminar este contador?')) {
                         deleteCounter(groupId, counter.id);
                     }
                 });
-// Editar nombre del contador
+                // Renombrar contador
                 renameBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Evitar que el evento se propague al card-body
-                    const titleElement = counterElement.querySelector('.card-title');
-                    const currentTitle = titleElement.textContent;
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = currentTitle;
-                    input.className = 'form-control';
-                    titleElement.replaceWith(input);
-                    input.focus();
-// Guardar cambios al hacer clic fuera del campo de texto
-                    input.addEventListener('blur', () => {
-                        const newName = input.value.trim();
-                        if (newName && newName !== currentTitle) {
-                            updateCounter(groupId, counter.id, { title: newName });
-                        }
-                        input.replaceWith(titleElement);
-                        titleElement.textContent = newName || currentTitle;
-                    });
-// Guardar cambios al presionar Enter
-                    input.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            input.blur(); // Guardar cambios al presionar Enter
-                        }
-                    });
+                    e.stopPropagation();
+                    const newTitle = prompt('Nuevo título:', counter.title);
+                    if (newTitle !== null && newTitle.trim() !== '') {
+                        updateCounter(groupId, counter.id, { title: newTitle });
+                    }
                 });
-// Minimizar/Maximizar contador
+                // Color change functionality
+                colorBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const colorPicker = document.createElement('input');
+                colorPicker.type = 'color';
+                colorPicker.value = counter.color || '#667eea'; // Default to primary color
+                colorPicker.style.position = 'absolute';
+                colorPicker.style.left = '-9999px';
+                document.body.appendChild(colorPicker);
+                
+                colorPicker.click();
+                
+                colorPicker.addEventListener('change', () => {
+                const newColor = colorPicker.value;
+                // Update counter color in database
+                updateCounter(groupId, counter.id, { color: newColor });
+                
+                // Update UI immediately
+                counterElement.style.borderLeftColor = newColor;
+                const countElement = counterElement.querySelector('.count');
+                if (countElement) {
+                countElement.style.color = newColor;
+                }
+                
+                document.body.removeChild(colorPicker);
+                });
+                });
+                // Minimizar/Maximizar contador
                 cardBody.addEventListener('click', (e) => {
                     // Evitar que el evento se active si el usuario está interactuando con los botones de control
                     if (!e.target.closest('.btn-group') && !e.target.closest('.increment') && !e.target.closest('.decrement')) {
@@ -455,35 +477,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 // Event listeners para formularios
-    if (newGroupForm) {
-        newGroupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const title = document.getElementById('newGroupTitle').value.trim();
-            const theme = document.getElementById('newGroupTheme').value;
+    const saveGroupBtn = document.getElementById('saveGroupBtn');
+    if (saveGroupBtn) {
+        saveGroupBtn.addEventListener('click', () => {
+            const title = document.getElementById('groupName').value.trim();
             if (title) {
-                createGroup(title, theme);
-                newGroupForm.reset();
+                createGroup(title, 'default'); // Using 'default' as theme since there's no theme selector
+                document.getElementById('groupName').value = '';
+                const modalElement = document.getElementById('newGroupModal');
+                if (modalElement && bootstrap) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) modal.hide();
+                }
             }
         });
-    } else {
-        console.warn('Elemento no encontrado: newGroupForm');
     }
-    if (newCounterForm) {
-        newCounterForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+
+    const saveCounterBtn = document.getElementById('saveCounterBtn');
+    if (saveCounterBtn) {
+        saveCounterBtn.addEventListener('click', () => {
             if (!currentGroupId) {
                 alert('Por favor, selecciona o crea un grupo primero');
                 return;
             }
-            const title = document.getElementById('newCounterTitle').value.trim();
-            const theme = document.getElementById('newCounterTheme').value;
+            const title = document.getElementById('counterName').value.trim();
+            const initialValue = parseInt(document.getElementById('counterInitialValue').value) || 0;
+            const color = document.getElementById('counterColor').value;
+            
             if (title) {
-                createCounter(currentGroupId, title, theme);
-                newCounterForm.reset();
+                createCounter(currentGroupId, title, color);
+                document.getElementById('counterName').value = '';
+                document.getElementById('counterInitialValue').value = '0';
+                document.getElementById('counterColor').value = '#0d6efd';
+                
+                const modalElement = document.getElementById('newCounterModal');
+                if (modalElement && bootstrap) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) modal.hide();
+                }
             }
         });
-    } else {
-        console.warn('Elemento no encontrado: newCounterForm');
     }
 // Event listener para eliminar grupo
     deleteGroupBtn.addEventListener('click', () => {
@@ -564,20 +597,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 // Evento para alternar entre modo claro y oscuro
     const toggleDarkModeBtn = document.getElementById('toggleDarkMode');
-    toggleDarkModeBtn.addEventListener('click', () => {
+    const toggleDarkModeBtn2 = document.getElementById('toggleDarkMode2');
+    
+    // Function to toggle dark mode
+    const toggleDarkMode = () => {
         document.body.classList.toggle('dark-mode');
         const container = document.querySelector('.container');
-        container.classList.toggle('dark-mode');
+        if (container) container.classList.toggle('dark-mode');
         
-        // Cambiar el texto del botón según el modo
-        if (document.body.classList.contains('dark-mode')) {
-            toggleDarkModeBtn.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-            toggleDarkModeBtn.innerHTML = '<i class="fas fa-moon"></i>';
-        }
-    });
+        // Update both buttons' icons
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        const newIcon = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        
+        if (toggleDarkModeBtn) toggleDarkModeBtn.innerHTML = newIcon;
+        if (toggleDarkModeBtn2) toggleDarkModeBtn2.innerHTML = newIcon;
+        
+        // Save preference to localStorage
+        localStorage.setItem('darkMode', isDarkMode);
+    };
+    
+    // Add event listeners to both buttons
+    if (toggleDarkModeBtn) {
+        toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
+    }
+    
+    if (toggleDarkModeBtn2) {
+        toggleDarkModeBtn2.addEventListener('click', toggleDarkMode);
+    }
+    
+    // Apply saved preference on load
+    if (localStorage.getItem('darkMode') === 'true') {
+        toggleDarkMode();
+    }
 });
-
 // Función para mostrar alertas al usuario
 function showAlert(message, type = 'error') {
     const alertDiv = document.createElement('div');

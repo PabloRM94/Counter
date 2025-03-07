@@ -36,7 +36,79 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // Añadir event listener para el selector de grupos
+    const statsGroupSelector = document.getElementById('statsGroupSelector');
+    if (statsGroupSelector) {
+        statsGroupSelector.addEventListener('change', async (e) => {
+            const selectedGroupId = e.target.value;
+            if (selectedGroupId) {
+                await updateStatistics(selectedGroupId);
+            }
+        });
+    }
+    
+    // Añadir event listener para cuando se muestra la sección de estadísticas
+    document.getElementById('toggleStatistics').addEventListener('click', async () => {
+        await loadGroupsForStatistics();
+    });
 });
+
+// Función para cargar los grupos en el selector de estadísticas
+async function loadGroupsForStatistics() {
+    if (!auth.currentUser) return;
+    
+    const loadingGroups = document.getElementById('loadingGroups');
+    const statsGroupSelector = document.getElementById('statsGroupSelector');
+    
+    if (!statsGroupSelector) return;
+    
+    try {
+        // Mostrar indicador de carga
+        if (loadingGroups) loadingGroups.style.display = 'block';
+        
+        // Limpiar opciones existentes excepto la primera (placeholder)
+        while (statsGroupSelector.options.length > 1) {
+            statsGroupSelector.remove(1);
+        }
+        
+        // Obtener grupos del usuario desde Firestore
+        const groupsRef = collection(db, 'users', auth.currentUser.uid, 'groups');
+        const querySnapshot = await getDocs(groupsRef);
+        
+        const groups = [];
+        querySnapshot.forEach((doc) => {
+            groups.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Ordenar grupos por orden
+        groups.sort((a, b) => a.order - b.order);
+        
+        // Añadir grupos al selector
+        groups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.title;
+            statsGroupSelector.appendChild(option);
+        });
+        
+        // Si hay un grupo activo en la sección de contadores, seleccionarlo
+        const currentGroupId = localStorage.getItem('lastVisitedGroupId');
+        if (currentGroupId) {
+            statsGroupSelector.value = currentGroupId;
+            await updateStatistics(currentGroupId);
+        } else if (groups.length > 0) {
+            // Si no hay grupo activo pero hay grupos, seleccionar el primero
+            statsGroupSelector.value = groups[0].id;
+            await updateStatistics(groups[0].id);
+        }
+    } catch (error) {
+        console.error('Error al cargar grupos para estadísticas:', error);
+    } finally {
+        // Ocultar indicador de carga
+        if (loadingGroups) loadingGroups.style.display = 'none';
+    }
+}
 function getChartConfig(type, labels, data) {
     const baseConfig = {
         options: {
@@ -74,18 +146,25 @@ function getChartConfig(type, labels, data) {
         distribution: {
             type: 'bar',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Valores de Contadores',
-                    data: data,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
+                labels: [''],
+                datasets: labels.map((label, index) => ({
+                    label: label,
+                    data: [data[index]],
+                    backgroundColor: `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 0.5)`,
+                    borderColor: `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 1)`,
+                    borderWidth: 1,
+                    categoryPercentage: 0.7,
+                    barPercentage: 0.9
+                }))
             },
             options: {
                 ...baseConfig.options,
                 scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
@@ -99,20 +178,35 @@ function getChartConfig(type, labels, data) {
             type: 'line',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Tendencia de Contadores',
-                    data: data,
+                datasets: labels.map((label) => ({
+                    label: label,
+                    data: Array(labels.length).fill(undefined),
                     fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
+                    borderColor: `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 1)`,
+                    tension: 0.1,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }))
             },
             options: {
                 responsive: true,
-                plugins: {
-                    title: {
+                scales: {
+                    x: {
                         display: true,
-                        text: 'Tendencia de Contadores'
+                        title: {
+                            display: true,
+                            text: 'Contadores'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        },
+                        title: {
+                            display: true,
+                            text: 'Valor'
+                        }
                     }
                 }
             }
@@ -123,21 +217,26 @@ function getChartConfig(type, labels, data) {
                 labels: labels,
                 datasets: [{
                     data: data,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.5)',
-                        'rgba(54, 162, 235, 0.5)',
-                        'rgba(255, 206, 86, 0.5)',
-                        'rgba(75, 192, 192, 0.5)',
-                        'rgba(153, 102, 255, 0.5)',
-                    ]
+                    backgroundColor: labels.map((_, i) => 
+                        `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 0.5)`
+                    )
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Distribución Circular'
+                    legend: {
+                        onClick: function(e, legendItem, legend) {
+                            const index = legendItem.index;
+                            const ci = legend.chart;
+                            
+                            const meta = ci.getDatasetMeta(0);
+                            const alreadyHidden = meta.data[index].hidden || false;
+                            
+                            meta.data[index].hidden = !alreadyHidden;
+                            
+                            ci.update();
+                        }
                     }
                 }
             }
@@ -151,25 +250,60 @@ function getChartConfig(type, labels, data) {
                     data: data,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointRadius: 5
                 }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Gráfico Radar'
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        beginAtZero: true,
+                        ticks: {
+                            display: true,
+                            precision: 0,
+                            backdropColor: 'rgba(255, 255, 255, 0.75)'
+                        },
+                        pointLabels: {
+                            display: true,
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 }
             }
         }
     };
 
+    // Configuración común para todos los gráficos
     Object.values(configs).forEach(config => {
         if (!config.options.plugins) {
             config.options.plugins = {};
         }
+        
+        // Asegurar que la leyenda permita interacción
+        if (!config.options.plugins.legend) {
+            config.options.plugins.legend = {};
+        }
+        
+        config.options.plugins.legend = {
+            ...config.options.plugins.legend,
+            display: true,
+            position: 'top',
+            labels: {
+                boxWidth: 20,
+                padding: 15,
+                font: {
+                    size: 12
+                }
+            }
+        };
+        
+        // Botón de compartir
         config.options.plugins.customButtons = {
             position: 'top',
             buttons: [{
@@ -259,6 +393,100 @@ async function initializeAllCharts(groupId) {
             if (canvas) {
                 const ctx = canvas.getContext('2d');
                 const config = getChartConfig(type, labels, values);
+                // Configuración especial para el gráfico de tendencia
+                if (type === 'trend') {
+                    // Crear un dataset único que muestre la tendencia pero permita seleccionar contadores
+                    config.data.datasets = [{
+                        label: 'Tendencia de valores',
+                        data: values,
+                        fill: false,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: labels.map((_, i) => 
+                            `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 1)`
+                        ),
+                        // Ocultar la etiqueta principal del dataset
+                        showLine: true,
+                        pointStyle: 'circle'
+                    }];
+                    // Configurar la leyenda para mostrar cada punto como un elemento independiente
+                    config.options.plugins.legend = {
+                        display: true,
+                        position: 'top',
+                        onClick: function(e, legendItem, legend) {
+                            const index = legendItem.index;
+                            const ci = legend.chart;
+                            const dataset = ci.data.datasets[0];
+                            
+                            // Mantener un registro de los puntos visibles/ocultos
+                            dataset.hiddenPoints = dataset.hiddenPoints || [];
+                            
+                            // Comprobar si el punto está oculto
+                            const pointIsHidden = dataset.hiddenPoints.includes(index);
+                            
+                            if (pointIsHidden) {
+                                // Mostrar el punto nuevamente
+                                dataset.hiddenPoints = dataset.hiddenPoints.filter(i => i !== index);
+                            } else {
+                                // Ocultar el punto
+                                dataset.hiddenPoints.push(index);
+                            }
+                            
+                            // Reconstruir el dataset con solo los puntos visibles
+                            const visibleLabels = [];
+                            const visibleData = [];
+                            const visibleColors = [];
+                            const originalColors = dataset.originalPointBackgroundColor || dataset.pointBackgroundColor;
+                            
+                            // Guardar los colores originales si aún no se han guardado
+                            if (!dataset.originalPointBackgroundColor) {
+                                dataset.originalPointBackgroundColor = [...dataset.pointBackgroundColor];
+                            }
+                            
+                            labels.forEach((label, i) => {
+                                if (!dataset.hiddenPoints.includes(i)) {
+                                    visibleLabels.push(label);
+                                    visibleData.push(values[i]);
+                                    visibleColors.push(originalColors[i]);
+                                }
+                            });
+                            
+                            // Actualizar el gráfico con los datos filtrados
+                            ci.data.labels = visibleLabels;
+                            ci.data.datasets[0].data = visibleData;
+                            ci.data.datasets[0].pointBackgroundColor = visibleColors;
+                            
+                            ci.update();
+                        },
+                        labels: {
+                            generateLabels: function(chart) {
+                                const dataset = chart.data.datasets[0];
+                                dataset.hiddenPoints = dataset.hiddenPoints || [];
+                                
+                                // Usar los colores originales para las etiquetas
+                                const originalColors = dataset.originalPointBackgroundColor || dataset.pointBackgroundColor;
+                                
+                                return labels.map((label, i) => {
+                                    const isHidden = dataset.hiddenPoints.includes(i);
+                                    const color = originalColors[i];
+                                    
+                                    return {
+                                        text: label,
+                                        fillStyle: color,
+                                        strokeStyle: color,
+                                        lineWidth: 1,
+                                        hidden: isHidden,
+                                        index: i
+                                    };
+                                });
+                            }
+                        }
+                    };
+                }
+                
                 charts[type] = new Chart(ctx, config);
             }
         });

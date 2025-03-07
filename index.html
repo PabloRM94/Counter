@@ -53,62 +53,17 @@
         <!-- Sección de contadores -->
         <div id="counterSection" class="counter-container" style="display: none;">
             <div class="app-header d-flex justify-content-between align-items-center mb-4">
-                <h1 class="app-title">Mis Contadores</h1>
-                <button id="toggleDarkMode" class="btn theme-toggle" aria-label="Toggle dark mode">
+                <h1 class="app-title">Contadores</h1>
+                <div>
+                    <button id="toggleStatistics" class="btn btn-outline-primary">
+                        <i class="fas fa-chart-line me-1"></i>Estadísticas
+                    </button>
+                </div>
+                <button id="toggleDarkMode" class="btn theme-toggle me-2" aria-label="Toggle dark mode">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
             
-            <div id="statisticsSection" class="statistics-section mt-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3>Estadísticas</h3>
-                    <ul class="nav nav-tabs" id="chartTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="distribution-tab" data-bs-toggle="tab" data-bs-target="#distribution" type="button" role="tab" aria-controls="distribution" aria-selected="true">
-                                <i class="fas fa-chart-bar me-1"></i>Distribución
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="trend-tab" data-bs-toggle="tab" data-bs-target="#trend" type="button" role="tab" aria-controls="trend" aria-selected="false">
-                                <i class="fas fa-chart-line me-1"></i>Tendencia
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="pie-tab" data-bs-toggle="tab" data-bs-target="#pie" type="button" role="tab" aria-controls="pie" aria-selected="false">
-                                <i class="fas fa-chart-pie me-1"></i>Circular
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="radar-tab" data-bs-toggle="tab" data-bs-target="#radar" type="button" role="tab" aria-controls="radar" aria-selected="false">
-                                <i class="fas fa-spider me-1"></i>Radar
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="chartTabsContent">
-                <div class="tab-pane fade show active" id="distribution" role="tabpanel" aria-labelledby="distribution-tab">
-                    <div class="chart-container">
-                    <canvas id="statisticsChart1"></canvas>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="trend" role="tabpanel" aria-labelledby="trend-tab">
-                    <div class="chart-container">
-                    <canvas id="statisticsChart2"></canvas>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="pie" role="tabpanel" aria-labelledby="pie-tab">
-                    <div class="chart-container">
-                    <canvas id="statisticsChart3"></canvas>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="radar" role="tabpanel" aria-labelledby="radar-tab">
-                    <div class="chart-container">
-                    <canvas id="statisticsChart4"></canvas>
-                    </div>
-                </div>
-            </div>
             <div class="groups-section mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGroupModal" id="newGroupForm"> 
@@ -146,6 +101,84 @@
             </div>
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <button id="logoutButton" class="btn btn-outline-danger">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div id="statisticsSection" class="statistics-container" style="display: none;">
+            <div class="app-header d-flex justify-content-between align-items-center mb-4">
+                <h1 class="app-title">Estadísticas</h1>
+                <button id="backToCounters" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver a Contadores
+                </button>
+                <button id="toggleDarkMode2" class="btn theme-toggle me-2" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            
+            <div class="statistics-content mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <h3 class="me-3">Datos</h3>
+                    </div>
+                    <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="distribution-tab" data-bs-toggle="tab" data-bs-target="#distribution" type="button" role="tab" aria-controls="distribution" aria-selected="true">
+                                <i class="fas fa-chart-bar me-1"></i>Distribución
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="trend-tab" data-bs-toggle="tab" data-bs-target="#trend" type="button" role="tab" aria-controls="trend" aria-selected="false">
+                                <i class="fas fa-chart-line me-1"></i>Tendencia
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pie-tab" data-bs-toggle="tab" data-bs-target="#pie" type="button" role="tab" aria-controls="pie" aria-selected="false">
+                                <i class="fas fa-chart-pie me-1"></i>Circular
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="radar-tab" data-bs-toggle="tab" data-bs-target="#radar" type="button" role="tab" aria-controls="radar" aria-selected="false">
+                                <i class="fas fa-spider me-1"></i>Radar
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown mb-4">
+                    <div class="d-flex align-items-center">
+                        <label for="statsGroupSelector" class="me-2">Grupo:</label>
+                        <select class="form-select" id="statsGroupSelector" style="width: auto;">
+                            <option value="" selected disabled>Seleccionar Grupo</option>
+                            <!-- Los grupos se añadirán aquí dinámicamente desde Firestore -->
+                        </select>
+                        <div id="loadingGroups" class="ms-2" style="display: none;">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="chartTabsContent">
+                    <div class="tab-pane fade show active" id="distribution" role="tabpanel" aria-labelledby="distribution-tab">
+                        <div class="chart-container">
+                        <canvas id="statisticsChart1"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="trend" role="tabpanel" aria-labelledby="trend-tab">
+                        <div class="chart-container">
+                        <canvas id="statisticsChart2"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pie" role="tabpanel" aria-labelledby="pie-tab">
+                        <div class="chart-container">
+                        <canvas id="statisticsChart3"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="radar" role="tabpanel" aria-labelledby="radar-tab">
+                        <div class="chart-container">
+                        <canvas id="statisticsChart4"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
