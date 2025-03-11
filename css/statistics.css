@@ -1,0 +1,131 @@
+/* ======================================
+ESTILOS DE ESTADÍSTICAS Y GRÁFICOS
+   ====================================== */
+
+/* Contenedor principal de estadísticas 
+   Contiene todos los elementos de la sección de estadísticas */
+.statistics-container {
+    background-color: var(--card-bg);              /* Color de fondo según tema */
+    border-radius: 10px;                           /* Bordes redondeados */
+    padding: 20px;                                 /* Espacio interno */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);      /* Sombra suave */
+    transition: all 0.3s ease;                     /* Animación suave */
+}
+
+/* Contenedor de gráficos
+   Define el tamaño y comportamiento del área donde se muestran los gráficos */
+.chart-container {
+    position: relative;                            /* Posicionamiento relativo */
+    height: 400px;                                 /* Altura fija */
+    margin-bottom: 30px;                           /* Espacio inferior */
+    overflow-x: auto;                              /* Desplazamiento horizontal si es necesario */
+    overflow-y: hidden;                            /* Oculta desplazamiento vertical */
+    min-width: 300px;                              /* Ancho mínimo */
+}
+
+/* Envoltorio del gráfico para responsividad
+   Asegura que los gráficos se muestren correctamente en diferentes dispositivos */
+.chart-wrapper {
+    min-width: 500px;                              /* Ancho mínimo para evitar compresión */
+    height: 100%;                                  /* Ocupa toda la altura disponible */
+}
+
+/* ======================================
+ESTILOS DE PESTAÑAS DE NAVEGACIÓN
+   ====================================== */
+
+/* Barra de pestañas
+   Contiene los botones para cambiar entre diferentes tipos de gráficos */
+.nav-tabs {
+    border-bottom: 1px solid var(--border-color);  /* Borde inferior */
+}
+
+/* Enlace de pestaña individual
+   Estilo base para cada botón de pestaña */
+.nav-tabs .nav-link {
+    color: var(--text-color);                      /* Color de texto según tema */
+    border: 1px solid transparent;                 /* Borde transparente */
+    border-radius: 8px 8px 0 0;                    /* Bordes redondeados (solo arriba) */
+    padding: 10px 16px;                            /* Espacio interno */
+    transition: var(--transition);                 /* Animación suave */
+}
+
+/* Pestaña activa
+   Estilo para la pestaña seleccionada actualmente */
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);                   /* Color de texto destacado */
+    background-color: var(--card-bg);              /* Color de fondo según tema */
+    border-color: var(--border-color);             /* Color de borde */
+    border-bottom-color: transparent;              /* Borde inferior transparente */
+    font-weight: 600;                              /* Texto en negrita */
+}
+
+/* Efecto al pasar el ratón sobre pestañas no activas
+   Mejora la interactividad visual */
+.nav-tabs .nav-link:hover:not(.active) {
+    border-color: var(--border-color);             /* Color de borde al pasar el ratón */
+    background-color: rgba(0,0,0,0.03);            /* Fondo ligeramente oscurecido */
+}
+
+/* Contenido de las pestañas
+   Área donde se muestra el contenido de la pestaña seleccionada */
+#chartTabsContent {
+    background-color: var(--card-bg);              /* Color de fondo según tema */
+    border-radius: 0 0 var(--border-radius) var(--border-radius); /* Bordes redondeados (solo abajo) */
+    padding: 20px;                                 /* Espacio interno */
+    margin-top: -1px;                              /* Ajuste para alinear con pestañas */
+    border: 1px solid var(--border-color);         /* Borde */
+    border-top: none;                              /* Sin borde superior */
+}
+
+/* ======================================
+AJUSTES RESPONSIVOS PARA MÓVILES
+   ====================================== */
+
+/* Ajustes para pantallas medianas */
+@media (max-width: 768px) {
+    .chart-container {
+        min-height: 350px;                         /* Altura mínima reducida */
+        padding-bottom: 15px;                      /* Espacio inferior */
+    }
+    
+    .chart-wrapper {
+        min-width: 600px;                          /* Ancho mínimo ajustado */
+    }
+
+    .nav-tabs {
+        flex-wrap: nowrap;                         /* Evita que las pestañas se envuelvan */
+        overflow-x: auto;                          /* Permite desplazamiento horizontal */
+        -webkit-overflow-scrolling: touch;         /* Desplazamiento suave en iOS */
+    }
+
+    .nav-tabs .nav-link {
+        white-space: nowrap;                       /* Evita saltos de línea en texto */
+        font-size: 0.9rem;                         /* Tamaño de texto reducido */
+        padding: 8px 12px;                         /* Espacio interno reducido */
+    }
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 480px) {
+    .chart-container {
+        min-height: 300px;                         /* Altura mínima más reducida */
+        padding: 10px;                             /* Espacio interno reducido */
+    }
+
+    .statistics-section {
+        padding: 10px;                             /* Espacio interno reducido */
+    }
+}
+
+/* Ajustes para modo oscuro */
+body.dark-mode .chart-container,
+body.dark-mode .statistics-container {
+    background-color: var(--card-bg);              /* Color de fondo según tema oscuro */
+    color: var(--text-color);                      /* Color de texto según tema oscuro */
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+    background-color: var(--card-bg);              /* Color de fondo de pestaña activa en modo oscuro */
+    color: var(--primary-color);                   /* Color de texto de pestaña activa en modo oscuro */
+}

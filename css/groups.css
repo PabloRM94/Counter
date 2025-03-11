@@ -1,0 +1,137 @@
+/* ======================================
+   ESTILOS DE GRUPOS Y NAVEGACIÓN
+   ====================================== */
+
+/* Sección principal de grupos
+   Contiene la navegación y los controles de grupos */
+.groups-section {
+    margin-bottom: 2rem;                           /* Espacio inferior */
+    background-color: var(--card-bg);              /* Color de fondo según tema */
+    padding: 20px;                                 /* Espacio interno */
+    border-radius: var(--border-radius);           /* Bordes redondeados */
+    box-shadow: var(--shadow);                     /* Sombra para profundidad */
+}
+
+/* Navegación entre grupos
+   Muestra los diferentes grupos disponibles */
+.groups-navigation {
+    display: flex;                                 /* Disposición flexible */
+    flex-wrap: wrap;                               /* Permite salto de línea */
+    gap: 10px;                                     /* Espacio entre elementos */
+    margin-bottom: 1.5rem;                         /* Espacio inferior */
+}
+
+/* Elemento individual de grupo
+   Cada botón que representa un grupo */
+.group-item {
+    padding: 10px 15px;                            /* Espacio interno */
+    background-color: var(--theme-default-bg);     /* Color de fondo según tema */
+    border-radius: var(--border-radius);           /* Bordes redondeados */
+    cursor: pointer;                               /* Cursor tipo mano */
+    transition: var(--transition);                 /* Animación suave */
+    border-left: 4px solid var(--primary-color);   /* Borde izquierdo de color */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);        /* Sombra ligera */
+}
+
+/* Efecto al pasar el ratón sobre el grupo */
+.group-item:hover {
+    transform: translateY(-2px);                   /* Elevación ligera */
+    box-shadow: var(--shadow);                     /* Sombra más pronunciada */
+}
+
+/* Estilo para el grupo actualmente seleccionado */
+.group-item.active {
+    background-color: var(--primary-color);        /* Fondo con color principal */
+    color: white;                                  /* Texto en blanco */
+    border-left: 4px solid var(--primary-hover);   /* Borde izquierdo más oscuro */
+}
+
+/* Cabecera del grupo actual
+   Muestra el título y acciones del grupo seleccionado */
+.current-group-header {
+    padding: 15px;                                 /* Espacio interno */
+    background-color: var(--card-bg);              /* Color de fondo según tema */
+    border-radius: var(--border-radius);           /* Bordes redondeados */
+    box-shadow: var(--shadow);                     /* Sombra para profundidad */
+    margin-bottom: 20px;                           /* Espacio inferior */
+}
+
+/* Título del grupo actual */
+#currentGroupTitle {
+    margin: 0;                                     /* Sin margen */
+    font-weight: 600;                              /* Texto semi-negrita */
+}
+
+/* Mensaje cuando no hay grupo seleccionado */
+#noGroupSelected {
+    background-color: var(--card-bg);              /* Color de fondo según tema */
+    border-radius: var(--border-radius);           /* Bordes redondeados */
+    padding: 30px;                                 /* Espacio interno amplio */
+    box-shadow: var(--shadow);                     /* Sombra para profundidad */
+    text-align: center;                            /* Texto centrado */
+}
+
+/* Mensaje cuando un grupo está vacío */
+#emptyGroupMessage {
+    text-align: center;                            /* Texto centrado */
+    padding: 2rem 0;                               /* Espacio vertical */
+    color: var(--text-color);                      /* Color de texto según tema */
+    opacity: 0.7;                                  /* Ligeramente transparente */
+}
+
+/* ======================================
+   AJUSTES RESPONSIVOS PARA MÓVILES
+   ====================================== */
+
+/* Ajustes para pantallas medianas */
+@media (max-width: 768px) {
+    /* Mejor distribución de grupos en móvil */
+    .groups-navigation {
+        display: grid;                             /* Disposición en cuadrícula */
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Columnas adaptativas */
+        gap: 8px;                                  /* Espacio reducido entre elementos */
+    }
+    
+    .group-item {
+        text-align: center;                        /* Texto centrado */
+        padding: 8px 10px;                         /* Espacio interno reducido */
+        font-size: 0.9rem;                         /* Texto más pequeño */
+    }
+    
+    /* Ajuste de cabecera de grupo en móvil */
+    .current-group-header .d-flex {
+        flex-direction: column;                    /* Elementos en columna */
+        align-items: center !important;            /* Centrado horizontal */
+    }
+    
+    .current-group-header h3 {
+        margin-bottom: 15px;                       /* Espacio inferior */
+        text-align: center;                        /* Texto centrado */
+    }
+    
+    .current-group-header .btn-group {
+        width: 100%;                               /* Ancho completo */
+        justify-content: center;                   /* Centrado horizontal */
+    }
+    
+    .current-group-header .btn-group .btn {
+        flex: 1;                                   /* Distribución equitativa */
+        padding: 8px;                              /* Espacio interno reducido */
+        font-size: 0.8rem;                         /* Texto más pequeño */
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .groups-section {
+        padding: 15px;                             /* Espacio interno reducido */
+    }
+}
+
+/* Ajustes para modo oscuro */
+body.dark-mode .groups-section,
+body.dark-mode .current-group-header,
+body.dark-mode #noGroupSelected {
+    background-color: var(--card-bg);              /* Color de fondo según tema oscuro */
+    color: var(--text-color);                      /* Color de texto según tema oscuro */
+}

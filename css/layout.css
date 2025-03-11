@@ -1,0 +1,9 @@
+/* Contenedor principal - Este es el elemento que contiene todo el contenido principal de la página */
+.main-container {
+    max-width: 800px;                      /* Limita el ancho máximo a 800px para mejor legibilidad */
+    margin: 0 auto;                        /* Centra el contenedor horizontalmente en la página */
+    padding: 25px;                         /* Añade espacio interno de 25px en todos los lados */
+    background-color: var(--card-bg);      /* Usa la variable CSS para el color de fondo */
+    border-radius: var(--border-radius);   /* Aplica bordes redondeados según la variable CSS */
+    box-shadow: var(--shadow);             /* Aplica sombra según la variable CSS para dar profundidad */
+}

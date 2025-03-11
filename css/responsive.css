@@ -1,0 +1,38 @@
+
+/* ======================================
+   ESTILOS RESPONSIVOS
+   ====================================== */
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 576px) {
+    .counter-item h4 {
+        max-width: 100%;                          /* Ancho completo en móviles */
+        margin-bottom: 10px;                      /* Espacio inferior */
+    }
+    
+    .counter-item .d-flex {
+        flex-direction: column;                   /* Elementos en columna */
+        align-items: center;                      /* Centrado horizontal */
+    }
+    
+    .counter-content {
+        justify-content: center;                  /* Centrado horizontal */
+        width: 100%;                              /* Ancho completo */
+    }
+    
+    /* Ajustes para plantillas en móviles */
+    .template-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Columnas más estrechas */
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 400px) {
+    .template-description {
+        display: none;                            /* Ocultar descripciones en pantallas muy pequeñas */
+    }
+    
+    .template-card {
+        padding: 10px;                            /* Reducir padding */
+    }
+}

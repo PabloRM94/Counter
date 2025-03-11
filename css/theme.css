@@ -1,0 +1,55 @@
+/* ======================================
+ESTILOS DE TEMAS Y MODO OSCURO
+   ====================================== */
+
+/* Estilos para el modo oscuro */
+body.dark-mode {
+    background-color: var(--background-color);     /* Usar la variable correcta */
+}
+
+/* Ajustes de componentes en modo oscuro */
+body.dark-mode .chart-container,
+body.dark-mode .statistics-container,
+body.dark-mode .groups-section,
+body.dark-mode .current-group-header,
+body.dark-mode #noGroupSelected,
+body.dark-mode .counter-item {
+    background-color: var(--card-bg);              /* Color de fondo según tema oscuro */
+    color: var(--text-color);                      /* Color de texto según tema oscuro */
+}
+
+/* Ajustes de navegación en modo oscuro */
+body.dark-mode .nav-tabs .nav-link.active {
+    background-color: var(--card-bg);              /* Color de fondo según tema oscuro */
+    color: var(--primary-color);                   /* Color de texto destacado */
+}
+
+/* Ajustes de formularios en modo oscuro */
+body.dark-mode .form-control {
+    background-color: rgba(255, 255, 255, 0.1);    /* Fondo semitransparente */
+    border-color: var(--border-color);             /* Color de borde según tema */
+    color: var(--text-color);                      /* Color de texto según tema */
+}
+
+/* Botón de cambio de tema */
+.theme-toggle {
+    width: 40px;                                   /* Ancho fijo */
+    height: 40px;                                  /* Altura fija (forma circular) */
+    border-radius: 50%;                            /* Forma circular */
+    display: flex;                                 /* Disposición flexible */
+    align-items: center;                           /* Centrado vertical */
+    justify-content: center;                       /* Centrado horizontal */
+    background-color: transparent;                 /* Fondo transparente */
+    border: 1px solid var(--border-color);         /* Borde sutil */
+    color: var(--text-color);                      /* Color de texto según tema */
+    transition: var(--transition);                 /* Animación suave */
+    position: relative;                            /* Posicionamiento relativo */
+    top: 0;                                        /* Sin desplazamiento vertical */
+    margin-left: 10px;                             /* Espacio a la izquierda */
+}
+
+/* Efecto al pasar el ratón sobre botón de tema */
+.theme-toggle:hover {
+    background-color: var(--border-color);         /* Fondo sutil al pasar el ratón */
+    transform: rotate(15deg);                      /* Efecto de rotación */
+}

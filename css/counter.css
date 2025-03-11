@@ -1,0 +1,110 @@
+/* ======================================
+ESTILOS DE CONTADOR
+   ====================================== */
+
+/* Estilo principal del display del contador 
+   Muestra el número grande en el centro */
+.counter-display {
+    font-size: 5rem;                              /* Tamaño grande de fuente */
+    font-weight: bold;                            /* Texto en negrita */
+    text-align: center;                           /* Centrado horizontal */
+    color: var(--text-color);                     /* Color del texto según tema */
+    margin: 2rem 0;                               /* Espacio vertical */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);     /* Sombra suave */
+}
+
+/* Contenedor de los botones de control 
+   (incrementar/decrementar) */
+.counter-controls {
+    display: flex;                                /* Disposición flexible */
+    justify-content: center;                      /* Centrado horizontal */
+    gap: 1.5rem;                                  /* Espacio entre botones */
+    margin-bottom: 1.5rem;                        /* Espacio inferior */
+}
+
+/* Estilo de los botones de control */
+.counter-controls button {
+    width: 60px;                                  /* Ancho fijo */
+    height: 60px;                                 /* Altura fija (forma circular) */
+    font-size: 1.5rem;                            /* Tamaño de texto */
+    border-radius: 50%;                           /* Forma circular */
+    display: flex;                                /* Disposición flexible */
+    align-items: center;                          /* Centrado vertical */
+    justify-content: center;                      /* Centrado horizontal */
+    transition: var(--transition);                /* Animación suave */
+}
+
+/* Efecto al pasar el ratón sobre los botones */
+.counter-controls button:hover {
+    transform: scale(1.1);                        /* Efecto de agrandamiento */
+    box-shadow: var(--shadow);                    /* Sombra para profundidad */
+}
+
+/* Estilo para los números de contador en la lista */
+.counter-content .count {
+    font-size: 2.5rem;                            /* Tamaño grande */
+    font-weight: 700;                             /* Texto en negrita */
+    color: var(--primary-color);                  /* Color principal */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);     /* Sombra suave */
+    background-color: rgba(255, 255, 255, 0.7);   /* Fondo semitransparente */
+    border-radius: 8px;                           /* Bordes redondeados */
+    padding: 0.2rem 1rem;                         /* Espacio interno */
+    min-width: 80px;                              /* Ancho mínimo */
+    display: inline-block;                        /* Comportamiento en línea */
+    text-align: center;                           /* Texto centrado */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);       /* Sombra ligera */
+    transition: all 0.2s ease;                    /* Animación suave */
+    cursor: pointer;                              /* Cursor tipo mano */
+}
+
+/* Efecto al pasar el ratón sobre el contador */
+.counter-item:hover .count {
+    transform: scale(1.1);                        /* Efecto de agrandamiento */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);        /* Sombra más pronunciada */
+}
+
+/* Ajuste para modo oscuro */
+body.dark-mode .counter-content .count {
+    background-color: rgba(0, 0, 0, 0.2);         /* Fondo oscuro semitransparente */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);        /* Sombra adaptada */
+}
+
+/* ======================================
+   ESTILOS DE ELEMENTOS DE CONTADOR
+   ====================================== */
+
+/* Estilo para cada elemento contador en la lista */
+.counter-item {
+    padding: 15px;                                /* Espacio interno */
+    margin-bottom: 15px;                          /* Espacio inferior */
+    background-color: var(--card-bg);             /* Color de fondo según tema */
+    border-radius: var(--border-radius);          /* Bordes redondeados */
+    box-shadow: var(--shadow);                    /* Sombra para profundidad */
+    transition: var(--transition);                /* Animación suave */
+    border-left: 4px solid var(--primary-color);  /* Borde izquierdo de color */
+}
+
+/* Título del contador con límite de longitud */
+.counter-item h4 {
+    max-width: 60%;                               /* Ancho máximo para el título */
+    overflow: hidden;                             /* Oculta el contenido que sobrepasa */
+    text-overflow: ellipsis;                      /* Muestra puntos suspensivos */
+    white-space: nowrap;                          /* Evita saltos de línea */
+    margin-bottom: 0;                             /* Elimina margen inferior */
+}
+
+/* Contenido del contador (número y botones) */
+.counter-content {
+    display: flex;                                /* Disposición flexible */
+    align-items: center;                          /* Centrado vertical */
+    justify-content: flex-end;                    /* Alineación a la derecha */
+    min-width: 180px;                             /* Ancho mínimo para mantener consistencia */
+    flex-shrink: 0;                               /* Evita que se encoja */
+}
+
+/* Efecto al pasar el ratón sobre el elemento */
+.counter-item:hover {
+    transform: translateX(5px);                   /* Desplazamiento horizontal */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);       /* Sombra más pronunciada */
+}
+

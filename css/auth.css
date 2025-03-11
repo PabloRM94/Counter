@@ -1,0 +1,42 @@
+/* Estilos para los componentes de autenticación (login/registro) */
+.auth-container {
+    max-width: 450px;          /* Ancho máximo del contenedor */
+    margin: 2rem auto;         /* Margen superior e inferior de 2rem, centrado horizontalmente */
+    padding: 2rem;             /* Relleno interno de 2rem en todos los lados */
+    background-color: var(--card-bg);       /* Color de fondo usando variable CSS */
+    border-radius: var(--border-radius);    /* Bordes redondeados usando variable CSS */
+    box-shadow: var(--shadow);              /* Sombra usando variable CSS */
+}
+
+/* Estilo para el formulario dentro del contenedor de autenticación */
+.auth-form {
+    margin-bottom: 20px;       /* Espacio inferior de 20px */
+}
+
+/* Estilo para las etiquetas dentro de elementos flotantes del formulario */
+.form-floating > label {
+    color: #6c757d;            /* Color de texto gris para las etiquetas */
+}
+
+/* Estilo para las etiquetas cuando el campo de entrada tiene foco */
+.form-floating > .form-control:focus ~ label {
+    color: var(--primary-color);    /* Cambia el color de la etiqueta al color primario cuando el campo tiene foco */
+}
+
+/* Estilo para los campos de entrada cuando tienen foco */
+.form-control:focus {
+    border-color: var(--primary-color);                  /* Borde del color primario cuando tiene foco */
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25); /* Sombra suave del color primario */
+}
+
+
+/* Estilo para el logo en la pantalla de autenticación */
+.auth-logo {
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.auth-logo:hover {
+    transform: scale(1.05);
+}

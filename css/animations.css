@@ -1,0 +1,31 @@
+/* ======================================
+ESTILOS DE ANIMACIONES
+===================================== */
+
+/* Animación de aparición gradual */
+@keyframes fadeIn {
+    from { opacity: 0; }                           /* Inicio: invisible */
+    to { opacity: 1; }                             /* Fin: completamente visible */
+}
+
+/* Clase para aplicar animación de aparición */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;                /* Duración y tipo de animación */
+}
+
+/* Animación de deslizamiento desde la derecha */
+@keyframes slideInRight {
+    from { 
+        transform: translateX(30px);               /* Inicio: desplazado a la derecha */
+        opacity: 0;                                /* Inicio: invisible */
+    }
+    to { 
+        transform: translateX(0);                  /* Fin: posición normal */
+        opacity: 1;                                /* Fin: completamente visible */
+    }
+}
+
+/* Clase para aplicar animación de deslizamiento */
+.slide-in {
+    animation: slideInRight 0.3s ease-out;         /* Duración y tipo de animación */
+}

@@ -1,0 +1,30 @@
+/* Variables globales - Definición de colores y estilos base para el modo claro */
+:root {
+    /* Colores principales de la aplicación */
+    --primary-color: #667eea;    /* Color principal - Azul violáceo */
+    --primary-hover: #5a6fd6;    /* Color cuando se pasa el mouse - Azul violáceo más oscuro */
+    --secondary-color: #4c83b9;  /* Color secundario - Azul medio */
+    
+    /* Colores base del tema claro */
+    --background-color: #f0f4f8; /* Color de fondo general - Gris muy claro */
+    --card-bg: #ffffff;          /* Color de fondo de las tarjetas - Blanco */
+    --text-color: #333333;       /* Color del texto - Gris oscuro */
+    --border-color: #e2e8f0;     /* Color de los bordes - Gris claro */
+    
+    /* Efectos visuales */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Sombra suave para elementos */
+    --border-radius: 10px;                    /* Redondeo de esquinas */
+    --transition: all 0.3s ease;              /* Transición suave para animaciones */
+
+}
+
+/* Variables para el modo oscuro - Se activan cuando se añade la clase dark-mode al body */
+body.dark-mode {
+    /* Colores base del tema oscuro */
+    --background-color: #1a1a2e;  /* Fondo general - Azul muy oscuro */
+    --card-bg: #2c2c3c;          /* Fondo de tarjetas - Gris oscuro */
+    --text-color: #e1e1e1;       /* Color del texto - Gris muy claro */
+    --border-color: #444444;      /* Color de bordes - Gris medio */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);  /* Sombra más pronunciada */
+
+}
