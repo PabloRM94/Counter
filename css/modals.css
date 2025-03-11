@@ -1,0 +1,55 @@
+/* ======================================
+ESTILOS DE VENTANAS MODALES
+   ====================================== */
+
+/* Contenedor principal del modal */
+.modal-content {
+    border-radius: var(--border-radius);           /* Bordes redondeados */
+    box-shadow: var(--shadow);                     /* Sombra para profundidad */
+    border: none;                                  /* Sin borde */
+}
+
+/* Cabecera del modal */
+.modal-header {
+    border-bottom: 1px solid var(--border-color);  /* Borde inferior */
+    padding: 15px 20px;                            /* Espacio interno */
+}
+
+/* Pie del modal */
+.modal-footer {
+    border-top: 1px solid var(--border-color);     /* Borde superior */
+    padding: 15px 20px;                            /* Espacio interno */
+}
+
+/* Cuerpo del modal */
+.modal-body {
+    padding: 20px;                                 /* Espacio interno */
+}
+
+/* Ajustes para modo oscuro */
+body.dark-mode .modal-content {
+    background-color: var(--card-bg);              /* Color de fondo según tema oscuro */
+    color: var(--text-color);                      /* Color de texto según tema oscuro */
+}
+
+/* Ajustes para formularios en modales */
+.modal-body .form-control {
+    background-color: var(--input-bg);             /* Color de fondo según tema */
+    border-color: var(--border-color);             /* Color de borde según tema */
+    color: var(--text-color);                      /* Color de texto según tema */
+}
+
+/* Ajustes responsivos para móviles */
+@media (max-width: 480px) {
+    .modal-header, .modal-footer {
+        padding: 12px 15px;                        /* Espacio interno reducido */
+    }
+    
+    .modal-body {
+        padding: 15px;                             /* Espacio interno reducido */
+    }
+    
+    .modal-title {
+        font-size: 1.1rem;                         /* Tamaño de texto reducido */
+    }
+}

@@ -1,0 +1,125 @@
+/* ======================================
+ESTILOS DE BOTONES Y ACCIONES
+   ====================================== */
+
+/* Grupo de botones
+   Contenedor para múltiples botones agrupados */
+.btn-group .btn {
+    margin-left: 5px;                              /* Espacio entre botones */
+}
+
+/* Botón de éxito (verde)
+   Para acciones positivas como crear o confirmar */
+.btn-success {
+    background-color: #48bb78;                     /* Color de fondo verde */
+    border-color: #48bb78;                         /* Color de borde igual al fondo */
+}
+
+/* Efecto al pasar el ratón sobre botón de éxito */
+.btn-success:hover {
+    background-color: #38a169;                     /* Verde más oscuro al pasar el ratón */
+    border-color: #38a169;                         /* Borde más oscuro */
+    transform: translateY(-2px);                   /* Efecto de elevación */
+}
+
+/* Botón de peligro (rojo)
+   Para acciones destructivas como eliminar */
+.btn-danger {
+    background-color: #f56565;                     /* Color de fondo rojo */
+    border-color: #f56565;                         /* Color de borde igual al fondo */
+}
+
+/* Efecto al pasar el ratón sobre botón de peligro */
+.btn-danger:hover {
+    background-color: #e53e3e;                     /* Rojo más oscuro al pasar el ratón */
+    border-color: #e53e3e;                         /* Borde más oscuro */
+    transform: translateY(-2px);                   /* Efecto de elevación */
+}
+
+/* Botón con borde secundario
+   Para acciones secundarias o menos importantes */
+.btn-outline-secondary {
+    color: var(--text-color);                      /* Color de texto según tema */
+    border-color: var(--border-color);             /* Color de borde según tema */
+}
+
+/* Efecto al pasar el ratón sobre botón secundario */
+.btn-outline-secondary:hover {
+    background-color: var(--border-color);         /* Fondo sutil al pasar el ratón */
+    color: var(--text-color);                      /* Mantiene el color del texto */
+    transform: translateY(-2px);                   /* Efecto de elevación */
+}
+
+/* Botón de cierre de sesión
+   Estilo especial para el botón de logout */
+#logoutButton {
+    background-color: transparent;                 /* Fondo transparente */
+    color: #f56565;                                /* Color de texto rojo */
+    border: 1px solid #f56565;                     /* Borde rojo */
+    transition: var(--transition);                 /* Animación suave */
+}
+
+/* Efecto al pasar el ratón sobre botón de logout */
+#logoutButton:hover {
+    background-color: #f56565;                     /* Fondo rojo al pasar el ratón */
+    color: white;                                  /* Texto blanco */
+    transform: translateY(-2px);                   /* Efecto de elevación */
+}
+
+/* Selector de color
+   Botón para seleccionar colores */
+.color-picker-btn {
+    width: 30px;                                   /* Ancho fijo */
+    height: 30px;                                  /* Altura fija (forma circular) */
+    border-radius: 50%;                            /* Forma circular */
+    padding: 0;                                    /* Sin relleno interno */
+    display: flex;                                 /* Disposición flexible */
+    align-items: center;                           /* Centrado vertical */
+    justify-content: center;                       /* Centrado horizontal */
+    margin-left: 8px;                              /* Espacio a la izquierda */
+    border: 2px solid rgba(255, 255, 255, 0.2);    /* Borde sutil */
+    transition: var(--transition);                 /* Animación suave */
+}
+
+/* Efecto al pasar el ratón sobre selector de color */
+.color-picker-btn:hover {
+    transform: scale(1.1);                         /* Efecto de agrandamiento */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);      /* Sombra suave */
+}
+
+/* ======================================
+AJUSTES RESPONSIVOS PARA MÓVILES
+   ====================================== */
+
+/* Ajustes para pantallas medianas */
+@media (max-width: 768px) {
+    /* Mejora del diseño de grupos de botones en móvil */
+    .current-group-header .btn-group {
+        display: flex;                             /* Disposición flexible */
+        flex-wrap: wrap;                           /* Permite salto de línea */
+        justify-content: flex-end;                 /* Alineación a la derecha */
+        gap: 5px;                                  /* Espacio entre elementos */
+    }
+    
+    .current-group-header .btn-group .btn {
+        margin: 2px;                               /* Margen reducido */
+        padding: 8px 12px;                         /* Espacio interno reducido */
+        font-size: 0.9rem;                         /* Texto más pequeño */
+    }
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 480px) {
+    .counter-content .btn-group .btn {
+        padding: 5px 8px;                          /* Espacio interno más reducido */
+        font-size: 0.8rem;                         /* Texto aún más pequeño */
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .counter-content .btn-group .btn {
+        padding: 6px 8px;                          /* Espacio interno ajustado */
+        font-size: 0.8rem;                         /* Texto pequeño */
+    }
+}

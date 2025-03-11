@@ -1,0 +1,10 @@
+/* Estilos generales para toda la aplicación */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  /* Fuente principal con alternativas */
+    background-color: var(--background-color);  /* Color de fondo usando variable CSS */
+    margin: 0;  /* Elimina el margen predeterminado */
+    padding: 20px;  /* Añade espacio interno de 20px */
+    min-height: 100vh;  /* Asegura que el cuerpo ocupe al menos toda la altura de la ventana */
+    color: var(--text-color);  /* Color del texto usando variable CSS */
+    transition: var(--transition);  /* Aplica transición suave para cambios (útil para modo oscuro) */
+}

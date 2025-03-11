@@ -15,7 +15,7 @@ let charts = {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Inicializar el primer gráfico cuando se carga la página
-    const currentGroupId = document.querySelector('.group-button.active')?.dataset.groupId;
+    const currentGroupId = document.querySelector('.group-item.active')?.dataset.groupId;
     if (currentGroupId) {
         updateStatistics(currentGroupId);
     }
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentChartType = targetTab;
 
             // Obtener datos actuales
-            const currentGroupId = document.querySelector('.group-button.active')?.dataset.groupId;
+            const currentGroupId = document.querySelector('.group-item.active')?.dataset.groupId;
             if (currentGroupId) {
                 await updateStatistics(currentGroupId);
             }
@@ -504,5 +504,8 @@ async function updateStatistics(groupId) {
         console.error('Error actualizando estadísticas:', error);
     }
 }
-// Eliminar la función createOrUpdateChart ya que no la necesitamos más
+
+
+
+// Make sure to export the function
 export { updateStatistics };

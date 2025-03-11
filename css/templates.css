@@ -1,0 +1,80 @@
+/* ======================================
+ESTILOS DE PLANTILLAS
+   ====================================== */
+
+/* Cuadrícula de plantillas
+   Organiza las tarjetas de plantillas en una cuadrícula responsiva */
+.template-grid {
+    display: grid;                                 /* Disposición en cuadrícula */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Columnas adaptativas */
+    gap: 15px;                                     /* Espacio entre elementos */
+    margin-top: 20px;                              /* Espacio superior */
+}
+
+/* Tarjeta de plantilla individual
+   Cada opción de plantilla disponible */
+.template-card {
+    background-color: var(--card-bg);              /* Color de fondo según tema */
+    border-radius: var(--border-radius);           /* Bordes redondeados */
+    border: 1px solid var(--border-color);         /* Borde sutil */
+    padding: 15px;                                 /* Espacio interno */
+    cursor: pointer;                               /* Cursor tipo mano */
+    transition: var(--transition);                 /* Animación suave */
+    text-align: center;                            /* Texto centrado */
+}
+
+/* Efecto al pasar el ratón sobre la tarjeta */
+.template-card:hover {
+    transform: translateY(-5px);                   /* Elevación */
+    box-shadow: var(--shadow);                     /* Sombra para profundidad */
+    border-color: var(--primary-color);            /* Borde destacado */
+}
+
+/* Estilo para la plantilla seleccionada */
+.template-card.selected {
+    border: 2px solid var(--primary-color);        /* Borde más grueso y destacado */
+    background-color: rgba(102, 126, 234, 0.1);    /* Fondo ligeramente coloreado */
+}
+
+/* Icono de la plantilla */
+.template-icon {
+    font-size: 2rem;                               /* Tamaño grande */
+    margin-bottom: 10px;                           /* Espacio inferior */
+    color: var(--primary-color);                   /* Color destacado */
+}
+
+/* Título de la plantilla */
+.template-title {
+    font-weight: 600;                              /* Texto semi-negrita */
+    margin-bottom: 5px;                            /* Espacio inferior */
+}
+
+/* Descripción de la plantilla */
+.template-description {
+    font-size: 0.85rem;                            /* Texto pequeño */
+    color: var(--text-color);                      /* Color de texto según tema */
+    opacity: 0.8;                                  /* Ligeramente transparente */
+}
+
+/* ======================================
+   AJUSTES RESPONSIVOS PARA MÓVILES
+   ====================================== */
+
+/* Ajustes para pantallas medianas */
+@media (max-width: 768px) {
+    .template-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Columnas más estrechas */
+    }
+    
+    .template-icon {
+        font-size: 1.5rem;                         /* Icono más pequeño */
+    }
+    
+    .template-title {
+        font-size: 0.9rem;                         /* Título más pequeño */
+    }
+    
+    .template-description {
+        font-size: 0.75rem;                        /* Descripción más pequeña */
+    }
+}
