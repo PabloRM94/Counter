@@ -1,0 +1,43 @@
+/* ======================================
+   AJUSTES ESPECÍFICOS PARA MÓVILES
+   ====================================== */
+
+/* Mejoras para la visualización de contadores en móviles */
+@media (max-width: 576px) {
+    /* Ajustes para la cuadrícula de contadores */
+    .counters-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    /* Mejora de los botones de control en móviles */
+    .counter-item .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Mejora del espaciado en móviles */
+    .app-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    /* Ajuste de botones en la cabecera */
+    .app-header .btn-text {
+        display: none; /* Oculta el texto y deja solo el icono */
+    }
+    
+    /* Mejora de la visualización del botón de tema */
+    .theme-toggle {
+        width: 35px;
+        height: 35px;
+        margin-left: 5px;
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .app-header h1 {
+        font-size: 1.5rem;
+    }
+}
