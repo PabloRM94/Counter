@@ -126,6 +126,53 @@
     .groups-section {
         padding: 15px;                             /* Espacio interno reducido */
     }
+
+    /* Mejorando la visualización de grupos en dispositivos móviles */
+    @media (max-width: 576px) {
+        .groups-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .group-item {
+            flex: 0 0 auto;
+            min-width: 100px;
+            text-align: center;
+            margin: 0;
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+        
+        /* Mejora de la cabecera del grupo actual en móvil */
+        .current-group-header .d-flex {
+            flex-direction: column;
+            align-items: center !important;
+        }
+        
+        .current-group-header h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .current-group-header .btn-group {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .current-group-header .btn-group .btn {
+            flex: 1 1 auto;
+            margin: 2px;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+        }
+    }
 }
 
 /* Ajustes para modo oscuro */

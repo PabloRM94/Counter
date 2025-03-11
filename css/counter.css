@@ -108,3 +108,67 @@ body.dark-mode .counter-content .count {
     box-shadow: 0 6px 12px rgba(0,0,0,0.1);       /* Sombra más pronunciada */
 }
 
+/* Mejoras para la Visualización en Dispositivos Móviles
+
+Voy a realizar ajustes en los archivos CSS y HTML para mejorar la visualización de los botones y números en dispositivos móviles cuando están en orientación vertical. Estos cambios harán que la interfaz sea más usable y estéticamente agradable en pantallas pequeñas.
+
+## 1. Modificaciones en el CSS de Contadores
+
+Primero, vamos a mejorar el CSS para los contadores en dispositivos móviles:
+
+/* Mejorando la visualización de contadores en dispositivos móviles */
+@media (max-width: 576px) {
+    .counter-item {
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .counter-item .d-flex {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center !important;
+        margin-bottom: 10px;
+    }
+    
+    .counter-title {
+        font-size: 1.1rem;
+        max-width: 100%;
+        text-align: center;
+        margin-bottom: 10px !important;
+    }
+    
+    .counter-content {
+        justify-content: center;
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .counter-content .count {
+        font-size: 2rem;
+        min-width: 60px;
+        margin: 0 10px;
+    }
+    
+    .counter-controls button {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Ajustes adicionales para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .counter-content .count {
+        font-size: 1.8rem;
+        min-width: 50px;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    .counter-controls button {
+        width: 40px;
+        height: 40px;
+    }
+}
+
