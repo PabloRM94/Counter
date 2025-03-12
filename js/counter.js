@@ -98,19 +98,23 @@ async function loadCounters(groupId) {
                                 data-is-minimized="${counter.isMinimized}">
                                 ${counter.isMinimized ? '***' : counter.count}
                             </span>
-                            <div class="btn-group ms-2">
-                                <button class="btn btn-sm btn-outline-secondary edit-counter-btn" data-counter-id="${counter.id}" data-bs-toggle="modal" data-bs-target="#editCounterModal">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary decrement-btn" data-counter-id="${counter.id}">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-primary increment-btn" data-counter-id="${counter.id}">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger delete-counter-btn" data-counter-id="${counter.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                            <div class="counter-actions ms-2">
+                                <div class="counter-main-buttons">
+                                    <button class="btn btn-sm btn-outline-secondary decrement-btn" data-counter-id="${counter.id}">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary increment-btn" data-counter-id="${counter.id}">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="counter-admin-buttons ms-2">
+                                    <button class="btn btn-sm btn-outline-secondary edit-counter-btn" data-counter-id="${counter.id}" data-bs-toggle="modal" data-bs-target="#editCounterModal">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-counter-btn" data-counter-id="${counter.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
