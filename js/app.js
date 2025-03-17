@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/fi
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { loginUser, registerUser, logout } from './auth.js'; // Importar las funciones de autenticación
 
-// Initialize the app
+
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos DOM
     const authSection = document.getElementById('authSection');
@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variables globales
     let currentGroupId = null;
     
-    // Make currentGroupId accessible to other modules
     window.setCurrentGroupId = (groupId) => {
         currentGroupId = groupId;
     };
@@ -90,23 +89,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Template selection in new group modal
+    // Selección de plantilla en el modal de nuevo grupo
     const templateCards = document.querySelectorAll('.template-card');
     const selectedTemplateInput = document.getElementById('selectedTemplate');
     
     if (templateCards.length > 0 && selectedTemplateInput) {
         templateCards.forEach(card => {
             card.addEventListener('click', () => {
-                // Remove selected class from all cards
+                // Eliminar clase seleccionada de todas las tarjetas
                 templateCards.forEach(c => c.classList.remove('selected'));
                 
-                // Add selected class to clicked card
+                // Añadir clase seleccionada a la tarjeta clickeada
                 card.classList.add('selected');
                 
-                // Update hidden input value
+                // Actualizar valor del input oculto
                 selectedTemplateInput.value = card.dataset.template;
                 
-                // If template is not custom, suggest a name
+                // Si la plantilla no es personalizada, sugerir un nombre
                 const groupNameInput = document.getElementById('groupName');
                 const templateName = card.dataset.template;
                 
@@ -117,15 +116,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Select custom template by default
+        // Seleccionar plantilla personalizada por defecto
         const customTemplateCard = document.querySelector('.template-card[data-template="custom"]');
         if (customTemplateCard) {
             customTemplateCard.classList.add('selected');
         }
     }
     
-    // Save group with template
-    // Make sure this event listener is only attached once
+    // Guardar el grupo con plantilla
     if (saveGroupBtn) {
         saveGroupBtn.addEventListener('click', async () => {
             const groupName = document.getElementById('groupName').value.trim();
@@ -200,19 +198,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Remove the old edit group button event listener that uses prompt()
-    if (editGroupBtn) {
-    // Replace this event listener with the one that opens the modal
-    // The modal event listener is already defined below
-    // So we'll just remove this one or make it do nothing
+    if (editGroupBtn) { 
     editGroupBtn.addEventListener('click', () => {
-    // We'll leave this empty or remove it entirely
-    // The modal event listener below will handle editing
     });
     }
     
-    // The existing modal event listener can stay as is
-    // Edit Group functionality
     document.getElementById('editGroupBtn').addEventListener('click', function() {
         const currentGroupHeader = document.getElementById('currentGroupHeader');
         const currentGroupId = window.getCurrentGroupId ? window.getCurrentGroupId() : localStorage.getItem('lastVisitedGroupId');
@@ -222,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Get current group data
+        // Coger los datos
         const groupsRef = collection(db, 'users', auth.currentUser.uid, 'groups');
         getDocs(groupsRef).then(querySnapshot => {
             querySnapshot.forEach(doc => {
@@ -241,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Save edited group
+    // Guardar el grupo editado
     document.getElementById('saveEditGroupBtn').addEventListener('click', async function() {
         const currentGroupId = window.getCurrentGroupId ? window.getCurrentGroupId() : localStorage.getItem('lastVisitedGroupId');
         
@@ -259,26 +249,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            // Update group name and color
+            // Adaptar el titulo y color
             await import('./groups.js').then(module => {
                 module.updateGroupName(currentGroupId, newTitle);
                 module.updateGroupColor(currentGroupId, newColor);
             });
             
-            // Update UI
             document.getElementById('currentGroupTitle').textContent = newTitle;
             
-            // Update the group item color in the navigation
             const groupItem = document.querySelector(`.group-item[data-group-id="${currentGroupId}"]`);
             if (groupItem) {
                 groupItem.style.borderLeftColor = newColor;
             }
             
-            // Close the modal
+            // cerrar el modal
             const editGroupModal = bootstrap.Modal.getInstance(document.getElementById('editGroupModal'));
             editGroupModal.hide();
             
-            // Reload groups to reflect changes
             import('./groups.js').then(module => {
                 module.loadGroups();
             });
@@ -290,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }); 
 })
 
-// Add this code to handle saving edited counter
+
 document.getElementById('saveEditCounterBtn').addEventListener('click', async function() {
     const counterId = document.getElementById('editCounterId').value;
     const newTitle = document.getElementById('editCounterTitle').value.trim();
@@ -308,7 +295,6 @@ document.getElementById('saveEditCounterBtn').addEventListener('click', async fu
     }
     
     try {
-        // Update counter title and color
         await import('./counter.js').then(module => {
             module.updateCounter(currentGroupId, counterId, { 
                 title: newTitle,
@@ -316,7 +302,6 @@ document.getElementById('saveEditCounterBtn').addEventListener('click', async fu
             });
         });
         
-        // Close the modal
         const editCounterModal = bootstrap.Modal.getInstance(document.getElementById('editCounterModal'));
         editCounterModal.hide();
         
