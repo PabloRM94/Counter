@@ -143,16 +143,40 @@ function getChartConfig(type, labels, data) {
                             size: 12
                         }
                     }
+                },
+                // Configuración para el botón de compartir
+                customShareButton: {
+                    enable: true,
+                    position: 'top',
+                    text: '📤 Compartir',
+                    onClick: async function(chart) {
+                        try {
+                            // Convertir el canvas a imagen
+                            const canvas = chart.canvas;
+                            const imageData = canvas.toDataURL('image/png');
+                            const blob = await (await fetch(imageData)).blob();
+                            const file = new File([blob], 'estadisticas.png', { type: 'image/png' });
+                            
+                            // Usar el API Web Share si está disponible
+                            if (navigator.share) {
+                                await navigator.share({
+                                    files: [file],
+                                    title: 'Estadísticas de Contadores',
+                                    text: 'Mira mis estadísticas de contadores'
+                                });
+                            } else {
+                                // Alternativa para navegadores que no soportan compartir
+                                const link = document.createElement('a');
+                                link.download = 'estadisticas.png';
+                                link.href = imageData;
+                                link.click();
+                            }
+                        } catch (error) {
+                            console.error('Error al compartir gráfico:', error);
+                        }
+                    }
                 }
             },
-            layout: {  // Espaciado interno del gráfico
-                padding: {
-                    top: 20,
-                    right: 20,
-                    bottom: 20,
-                    left: 20
-                }
-            }
         }
     };
 
@@ -425,6 +449,7 @@ async function initializeAllCharts(groupId) {
             if (canvas) {
                 const ctx = canvas.getContext('2d');
                 const config = getChartConfig(type, labels, values);
+                
                 // Configuración especial para el gráfico de tendencia
                 if (type === 'trend') {
                     // Crear un dataset único que muestre la tendencia pero permita seleccionar contadores
@@ -522,6 +547,10 @@ async function initializeAllCharts(groupId) {
                 charts[type] = new Chart(ctx, config);
             }
         });
+        
+        // Añadir botón de compartir junto al selector de grupos
+        addShareButton();
+        
     } catch (error) {
         console.error('Error inicializando gráficos:', error);
     }
@@ -537,7 +566,111 @@ async function updateStatistics(groupId) {
     }
 }
 
-
-
 // Make sure to export the function
 export { updateStatistics };
+
+/**
+ * Añade un botón de compartir junto al selector de grupos
+ */
+function addShareButton() {
+    // Buscar el contenedor del selector de grupos
+    const selectorContainer = document.getElementById('statsGroupSelector').parentElement;
+    
+    // Eliminar botón existente para evitar duplicados
+    const existingButton = document.querySelector('.share-stats-btn');
+    if (existingButton) {
+        existingButton.remove();
+    }
+    
+    // Crear nuevo botón
+    const shareButton = document.createElement('button');
+    shareButton.className = 'btn btn-primary share-stats-btn';
+    shareButton.innerHTML = '<i class="fas fa-share-alt"></i> <span>Compartir</span>';
+    shareButton.title = 'Compartir gráfico actual';
+    
+    // Añadir evento de clic
+    shareButton.addEventListener('click', async () => {
+        // Obtener el gráfico actualmente visible
+        const activeTabId = document.querySelector('.tab-pane.active').id;
+        let chartType;
+        
+        switch (activeTabId) {
+            case 'distribution':
+                chartType = 'distribution';
+                break;
+            case 'trend':
+                chartType = 'trend';
+                break;
+            case 'pie':
+                chartType = 'pie';
+                break;
+            case 'radar':
+                chartType = 'radar';
+                break;
+            default:
+                chartType = 'distribution';
+        }
+        
+        const chart = charts[chartType];
+        
+        if (chart) {
+            try {
+                // Mostrar mensaje de carga
+                showShareMessage('Preparando imagen para compartir...');
+                
+                // Convertir el canvas a imagen
+                const canvas = chart.canvas;
+                const imageData = canvas.toDataURL('image/png');
+                const blob = await (await fetch(imageData)).blob();
+                const file = new File([blob], 'estadisticas.png', { type: 'image/png' });
+                
+                // Usar el API Web Share si está disponible
+                if (navigator.share) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Estadísticas de Contadores',
+                        text: 'Mira mis estadísticas de contadores'
+                    });
+                    showShareMessage('¡Compartido con éxito!');
+                } else {
+                    // Alternativa para navegadores que no soportan compartir
+                    const link = document.createElement('a');
+                    link.download = 'estadisticas.png';
+                    link.href = imageData;
+                    link.click();
+                    showShareMessage('Imagen descargada');
+                }
+            } catch (error) {
+                console.error('Error al compartir gráfico:', error);
+                showShareMessage('No se pudo compartir. Intenta de nuevo.');
+            }
+        }
+    });
+    
+    // Añadir botón junto al selector
+    selectorContainer.appendChild(shareButton);
+}
+
+/**
+ * Muestra un mensaje temporal al compartir
+ * @param {string} message - Mensaje a mostrar
+ */
+function showShareMessage(message) {
+    // Buscar mensaje existente o crear uno nuevo
+    let messageElement = document.querySelector('.share-message');
+    
+    if (!messageElement) {
+        messageElement = document.createElement('div');
+        messageElement.className = 'share-message';
+        document.body.appendChild(messageElement);
+    }
+    
+    // Actualizar el mensaje y mostrarlo
+    messageElement.textContent = message;
+    messageElement.classList.add('show');
+    
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+        messageElement.classList.remove('show');
+    }, 3000);
+}
