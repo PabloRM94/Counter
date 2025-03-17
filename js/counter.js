@@ -144,13 +144,11 @@ async function loadCounters(groupId) {
                 });
                 
                 editBtn.addEventListener('click', () => {
-                    // Set the counter data in the edit modal
                     document.getElementById('editCounterId').value = counter.id;
                     document.getElementById('editCounterTitle').value = counter.title;
                     document.getElementById('editCounterColor').value = counter.color || '#0d6efd';
                 });
                 
-                // Add click event to the counter number itself
                 countElement.addEventListener('click', () => {
                     toggleMinimizeCounter(groupId, counter.id, counter.isMinimized);
                 });

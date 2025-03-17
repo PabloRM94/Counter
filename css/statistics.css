@@ -28,6 +28,201 @@ ESTILOS DE ESTADÍSTICAS Y GRÁFICOS
 .chart-wrapper {
     min-width: 500px;                              /* Ancho mínimo para evitar compresión */
     height: 100%;                                  /* Ocupa toda la altura disponible */
+    position: relative;                            /* Posicionamiento relativo para botones absolutos */
+}
+
+/* ======================================
+ESTILOS PARA BOTONES DE COMPARTIR
+   ====================================== */
+
+/* Botón para compartir gráficos
+   Permite al usuario compartir o descargar la imagen del gráfico */
+.share-chart-btn {
+    position: absolute !important;                 /* Posicionamiento absoluto forzado */
+    top: 10px !important;                          /* Distancia desde arriba */
+    right: 10px !important;                        /* Distancia desde la derecha */
+    z-index: 100 !important;                       /* Capa superior para asegurar visibilidad */
+    font-size: 0.85rem !important;                 /* Tamaño de texto reducido */
+    padding: 0.25rem 0.5rem !important;            /* Espacio interno reducido */
+    opacity: 0.9 !important;                       /* Ligeramente transparente */
+    transition: opacity 0.3s ease, transform 0.2s ease !important; /* Animación suave */
+    background-color: var(--primary-color, #0d6efd) !important; /* Color de fondo según tema */
+    color: white !important;                       /* Color de texto blanco */
+    border: none !important;                       /* Sin borde */
+    border-radius: 4px !important;                 /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Sombra suave */
+    display: flex !important;                      /* Usar flexbox */
+    align-items: center !important;                /* Centrar verticalmente */
+    justify-content: center !important;            /* Centrar horizontalmente */
+    gap: 5px !important;                           /* Espacio entre icono y texto */
+}
+
+/* Efecto al pasar el ratón sobre el botón de compartir
+   Mejora la interactividad visual */
+.share-chart-btn:hover {
+    opacity: 1 !important;                         /* Totalmente opaco al pasar el ratón */
+    transform: translateY(-2px) !important;        /* Ligero efecto de elevación */
+}
+
+/* Efecto al hacer clic en el botón de compartir */
+.share-chart-btn:active {
+    transform: translateY(0) !important;           /* Regresa a la posición original */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important; /* Sombra reducida */
+}
+
+/* Estilos para el mensaje de compartir */
+.share-message {
+    position: fixed;                               /* Posición fija en la pantalla */
+    bottom: 20px;                                  /* Distancia desde abajo */
+    left: 50%;                                     /* Centrado horizontal */
+    transform: translateX(-50%);                   /* Ajuste para centrado perfecto */
+    background-color: rgba(0, 0, 0, 0.8);          /* Fondo oscuro semi-transparente */
+    color: white;                                  /* Texto blanco */
+    padding: 10px 20px;                            /* Espacio interno */
+    border-radius: 20px;                           /* Bordes muy redondeados */
+    z-index: 1000;                                 /* Capa superior */
+    font-size: 0.9rem;                             /* Tamaño de texto */
+    opacity: 0;                                    /* Inicialmente invisible */
+    transition: opacity 0.3s ease;                 /* Animación de aparición/desaparición */
+    pointer-events: none;                          /* No intercepta eventos de ratón */
+}
+
+/* Clase para mostrar el mensaje */
+.share-message.show {
+    opacity: 1;                                    /* Visible */
+}
+
+/* Ajustes para pantallas medianas */
+@media (max-width: 768px) {
+    /* Ajustes para botón de compartir en pantallas medianas */
+    .share-chart-btn {
+        font-size: 0.8rem !important;              /* Tamaño de texto más reducido */
+        padding: 0.2rem 0.4rem !important;         /* Espacio interno más reducido */
+    }
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 480px) {
+    /* Ajustes para botón de compartir en pantallas pequeñas */
+    .share-chart-btn {
+        top: 5px !important;                       /* Distancia desde arriba reducida */
+        right: 5px !important;                     /* Distancia desde la derecha reducida */
+        font-size: 0.75rem !important;             /* Tamaño de texto aún más reducido */
+        padding: 0.15rem 0.3rem !important;        /* Espacio interno mínimo */
+    }
+    
+    /* Ocultar texto y mostrar solo icono en pantallas muy pequeñas */
+    .share-chart-btn span {
+        display: none;                             /* Ocultar texto */
+    }
+}
+
+/* Ajustes para modo oscuro */
+body.dark-mode .chart-container,
+body.dark-mode .statistics-container {
+    background-color: var(--card-bg);              /* Color de fondo según tema oscuro */
+    color: var(--text-color);                      /* Color de texto según tema oscuro */
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+    background-color: var(--card-bg);              /* Color de fondo de pestaña activa en modo oscuro */
+    color: var(--primary-color);                   /* Color de texto de pestaña activa en modo oscuro */
+}
+
+/* ======================================
+ESTILOS PARA BOTONES DE COMPARTIR
+   ====================================== */
+
+/* Botón para compartir gráficos
+   Colocado junto al selector de grupos */
+.share-stats-btn {
+    margin-left: 10px !important;                  /* Espacio a la izquierda (separación del selector) */
+    z-index: 10 !important;                        /* Capa superior para asegurar visibilidad */
+    font-size: 0.85rem !important;                 /* Tamaño de texto reducido */
+    padding: 0.25rem 0.5rem !important;            /* Espacio interno reducido */
+    opacity: 0.9 !important;                       /* Ligeramente transparente */
+    transition: opacity 0.3s ease, transform 0.2s ease !important; /* Animación suave */
+    background-color: var(--primary-color, #0d6efd) !important; /* Color de fondo según tema */
+    color: white !important;                       /* Color de texto blanco */
+    border: none !important;                       /* Sin borde */
+    border-radius: 4px !important;                 /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Sombra suave */
+    display: inline-flex !important;               /* Usar flexbox en línea */
+    align-items: center !important;                /* Centrar verticalmente */
+    justify-content: center !important;            /* Centrar horizontalmente */
+    gap: 5px !important;                           /* Espacio entre icono y texto */
+    vertical-align: middle !important;             /* Alineación vertical con el selector */
+}
+
+/* Efecto al pasar el ratón sobre el botón de compartir
+   Mejora la interactividad visual */
+.share-stats-btn:hover {
+    opacity: 1 !important;                         /* Totalmente opaco al pasar el ratón */
+    transform: translateY(-2px) !important;        /* Ligero efecto de elevación */
+}
+
+/* Efecto al hacer clic en el botón de compartir */
+.share-stats-btn:active {
+    transform: translateY(0) !important;           /* Regresa a la posición original */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important; /* Sombra reducida */
+}
+
+/* Estilos para el mensaje de compartir */
+.share-message {
+    position: fixed;                               /* Posición fija en la pantalla */
+    bottom: 20px;                                  /* Distancia desde abajo */
+    left: 50%;                                     /* Centrado horizontal */
+    transform: translateX(-50%);                   /* Ajuste para centrado perfecto */
+    background-color: rgba(0, 0, 0, 0.8);          /* Fondo oscuro semi-transparente */
+    color: white;                                  /* Texto blanco */
+    padding: 10px 20px;                            /* Espacio interno */
+    border-radius: 20px;                           /* Bordes muy redondeados */
+    z-index: 1000;                                 /* Capa superior */
+    font-size: 0.9rem;                             /* Tamaño de texto */
+    opacity: 0;                                    /* Inicialmente invisible */
+    transition: opacity 0.3s ease;                 /* Animación de aparición/desaparición */
+    pointer-events: none;                          /* No intercepta eventos de ratón */
+}
+
+/* Clase para mostrar el mensaje */
+.share-message.show {
+    opacity: 1;                                    /* Visible */
+}
+
+/* Ajustes para pantallas medianas */
+@media (max-width: 768px) {
+    /* Ajustes para botón de compartir en pantallas medianas */
+    .share-stats-btn {
+        font-size: 0.8rem !important;              /* Tamaño de texto más reducido */
+        padding: 0.2rem 0.4rem !important;         /* Espacio interno más reducido */
+    }
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 480px) {
+    /* Ajustes para botón de compartir en pantallas pequeñas */
+    .share-stats-btn {
+        font-size: 0.75rem !important;             /* Tamaño de texto aún más reducido */
+        padding: 0.15rem 0.3rem !important;        /* Espacio interno mínimo */
+        margin-top: 5px !important;                /* Espacio superior para separar del selector */
+        margin-left: 0 !important;                 /* Sin margen izquierdo en móviles */
+    }
+    
+    /* Ocultar texto y mostrar solo icono en pantallas muy pequeñas */
+    .share-stats-btn span {
+        display: none !important;                  /* Ocultar texto */
+    }
+}
+
+/* Ajustes para modo oscuro */
+body.dark-mode .share-stats-btn {
+    background-color: #2c3e50 !important;          /* Color de fondo en modo oscuro */
+    border-color: #34495e !important;              /* Color de borde en modo oscuro */
+    color: #ecf0f1 !important;                     /* Color de texto en modo oscuro */
+}
+
+body.dark-mode .share-stats-btn:hover {
+    background-color: #34495e !important;          /* Color de fondo al pasar el ratón en modo oscuro */
 }
 
 /* ======================================
@@ -104,6 +299,12 @@ AJUSTES RESPONSIVOS PARA MÓVILES
         font-size: 0.9rem;                         /* Tamaño de texto reducido */
         padding: 8px 12px;                         /* Espacio interno reducido */
     }
+    
+    /* Ajustes para botón de compartir en pantallas medianas */
+    .share-chart-btn {
+        font-size: 0.8rem;                         /* Tamaño de texto más reducido */
+        padding: 0.2rem 0.4rem;                    /* Espacio interno más reducido */
+    }
 }
 
 /* Ajustes para pantallas pequeñas */
@@ -115,6 +316,19 @@ AJUSTES RESPONSIVOS PARA MÓVILES
 
     .statistics-section {
         padding: 10px;                             /* Espacio interno reducido */
+    }
+    
+    /* Ajustes para botón de compartir en pantallas pequeñas */
+    .share-chart-btn {
+        top: 5px;                                  /* Distancia desde arriba reducida */
+        right: 5px;                                /* Distancia desde la derecha reducida */
+        font-size: 0.75rem;                        /* Tamaño de texto aún más reducido */
+        padding: 0.15rem 0.3rem;                   /* Espacio interno mínimo */
+    }
+    
+    /* Ocultar texto y mostrar solo icono en pantallas muy pequeñas */
+    .share-chart-btn span {
+        display: none;                             /* Ocultar texto */
     }
 }
 

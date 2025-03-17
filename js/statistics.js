@@ -4,15 +4,17 @@ import {
     getDocs, 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-let currentChart = null;
-let currentChartType = 'distribution';
-let charts = {
-    distribution: null,
-    trend: null,
-    pie: null,
-    radar: null
+// Variables globales para gestionar los gráficos
+let currentChart = null;  // Referencia al gráfico actual
+let currentChartType = 'distribution';  // Tipo de gráfico seleccionado por defecto
+let charts = {  // Objeto para almacenar referencias a todos los gráficos
+    distribution: null,  // Gráfico de distribución (barras)
+    trend: null,         // Gráfico de tendencia (líneas)
+    pie: null,           // Gráfico circular
+    radar: null          // Gráfico de radar
 };
 
+// Inicializar la funcionalidad cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     // Inicializar el primer gráfico cuando se carga la página
     const currentGroupId = document.querySelector('.group-item.active')?.dataset.groupId;
@@ -20,16 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStatistics(currentGroupId);
     }
 
-    // Manejar cambios de pestaña
+    // Manejar cambios de pestaña entre diferentes tipos de gráficos
     const chartTabs = document.getElementById('chartTabs');
     if (chartTabs) {
         chartTabs.addEventListener('shown.bs.tab', async (e) => {
             const targetTab = e.target.getAttribute('aria-controls');
             
-            // Actualizar el tipo de gráfico
+            // Actualizar el tipo de gráfico seleccionado
             currentChartType = targetTab;
 
-            // Obtener datos actuales
+            // Obtener datos actuales y actualizar el gráfico
             const currentGroupId = document.querySelector('.group-item.active')?.dataset.groupId;
             if (currentGroupId) {
                 await updateStatistics(currentGroupId);
@@ -54,14 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Función para cargar los grupos en el selector de estadísticas
+/**
+ * Función para cargar los grupos en el selector de estadísticas
+ * Obtiene todos los grupos del usuario y los muestra en el selector
+ */
 async function loadGroupsForStatistics() {
-    if (!auth.currentUser) return;
+    if (!auth.currentUser) return;  // Verificar que el usuario esté autenticado
     
     const loadingGroups = document.getElementById('loadingGroups');
     const statsGroupSelector = document.getElementById('statsGroupSelector');
     
-    if (!statsGroupSelector) return;
+    if (!statsGroupSelector) return;  // Verificar que exista el selector
     
     try {
         // Mostrar indicador de carga
@@ -109,17 +114,26 @@ async function loadGroupsForStatistics() {
         if (loadingGroups) loadingGroups.style.display = 'none';
     }
 }
+
+/**
+ * Genera la configuración para cada tipo de gráfico
+ * @param {string} type - Tipo de gráfico (distribution, trend, pie, radar)
+ * @param {Array} labels - Etiquetas para los datos (nombres de contadores)
+ * @param {Array} data - Valores de los contadores
+ * @returns {Object} - Configuración del gráfico
+ */
 function getChartConfig(type, labels, data) {
+    // Configuración base común para todos los gráficos
     const baseConfig = {
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            devicePixelRatio: 2,
+            responsive: true,  // Hace que el gráfico se adapte al tamaño del contenedor
+            maintainAspectRatio: false,  // Permite cambiar la relación de aspecto
+            devicePixelRatio: 2,  // Mejora la calidad en pantallas de alta resolución
             animation: {
-                duration: 1000
+                duration: 1000  // Duración de la animación inicial
             },
             plugins: {
-                legend: {
+                legend: {  // Configuración de la leyenda
                     display: true,
                     position: 'top',
                     labels: {
@@ -129,63 +143,91 @@ function getChartConfig(type, labels, data) {
                             size: 12
                         }
                     }
+                },
+                // Configuración para el botón de compartir
+                customShareButton: {
+                    enable: true,
+                    position: 'top',
+                    text: '📤 Compartir',
+                    onClick: async function(chart) {
+                        try {
+                            // Convertir el canvas a imagen
+                            const canvas = chart.canvas;
+                            const imageData = canvas.toDataURL('image/png');
+                            const blob = await (await fetch(imageData)).blob();
+                            const file = new File([blob], 'estadisticas.png', { type: 'image/png' });
+                            
+                            // Usar el API Web Share si está disponible
+                            if (navigator.share) {
+                                await navigator.share({
+                                    files: [file],
+                                    title: 'Estadísticas de Contadores',
+                                    text: 'Mira mis estadísticas de contadores'
+                                });
+                            } else {
+                                // Alternativa para navegadores que no soportan compartir
+                                const link = document.createElement('a');
+                                link.download = 'estadisticas.png';
+                                link.href = imageData;
+                                link.click();
+                            }
+                        } catch (error) {
+                            console.error('Error al compartir gráfico:', error);
+                        }
+                    }
                 }
             },
-            layout: {
-                padding: {
-                    top: 20,
-                    right: 20,
-                    bottom: 20,
-                    left: 20
-                }
-            }
         }
     };
 
+    // Configuraciones específicas para cada tipo de gráfico
     const configs = {
+        // Gráfico de barras (distribución)
         distribution: {
             type: 'bar',
             data: {
-                labels: [''],
+                labels: [''],  // Una sola categoría para todas las barras
                 datasets: labels.map((label, index) => ({
                     label: label,
-                    data: [data[index]],
+                    data: [data[index]],  // Un valor por contador
                     backgroundColor: `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 0.5)`,
                     borderColor: `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 1)`,
                     borderWidth: 1,
-                    categoryPercentage: 0.7,
-                    barPercentage: 0.9
+                    categoryPercentage: 0.7,  // Ancho de la categoría
+                    barPercentage: 0.9  // Ancho de la barra dentro de la categoría
                 }))
             },
             options: {
                 ...baseConfig.options,
-                scales: {
+                scales: {  // Configuración de los ejes
                     x: {
                         grid: {
-                            display: false
+                            display: false  // Oculta las líneas de cuadrícula en el eje X
                         }
                     },
                     y: {
-                        beginAtZero: true,
+                        beginAtZero: true,  // Comienza el eje Y desde cero
                         ticks: {
-                            precision: 0
+                            precision: 0  // Muestra solo valores enteros
                         }
                     }
                 }
             }
         },
+        
+        // Gráfico de líneas (tendencia)
         trend: {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: labels.map((label) => ({
                     label: label,
-                    data: Array(labels.length).fill(undefined),
-                    fill: false,
+                    data: Array(labels.length).fill(undefined),  // Inicialmente vacío
+                    fill: false,  // No rellenar área bajo la línea
                     borderColor: `rgba(${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, ${50 + Math.floor(Math.random() * 150)}, 1)`,
-                    tension: 0.1,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
+                    tension: 0.1,  // Suavizado de la línea
+                    pointRadius: 6,  // Tamaño de los puntos
+                    pointHoverRadius: 8  // Tamaño de los puntos al pasar el ratón
                 }))
             },
             options: {
@@ -195,22 +237,24 @@ function getChartConfig(type, labels, data) {
                         display: true,
                         title: {
                             display: true,
-                            text: 'Contadores'
+                            text: 'Contadores'  // Título del eje X
                         }
                     },
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            precision: 0
+                            precision: 0  // Muestra solo valores enteros
                         },
                         title: {
                             display: true,
-                            text: 'Valor'
+                            text: 'Valor'  // Título del eje Y
                         }
                     }
                 }
             }
         },
+        
+        // Gráfico circular (pie)
         pie: {
             type: 'pie',
             data: {
@@ -233,14 +277,16 @@ function getChartConfig(type, labels, data) {
                             const meta = ci.getDatasetMeta(0);
                             const alreadyHidden = meta.data[index].hidden || false;
                             
-                            meta.data[index].hidden = !alreadyHidden;
+                            meta.data[index].hidden = !alreadyHidden;  // Alternar visibilidad
                             
-                            ci.update();
+                            ci.update();  // Actualizar el gráfico
                         }
                     }
                 }
             }
         },
+        
+        // Gráfico de radar
         radar: {
             type: 'radar',
             data: {
@@ -257,15 +303,15 @@ function getChartConfig(type, labels, data) {
             options: {
                 responsive: true,
                 scales: {
-                    r: {
+                    r: {  // Configuración del eje radial
                         angleLines: {
-                            display: true
+                            display: true  // Mostrar líneas angulares
                         },
                         beginAtZero: true,
                         ticks: {
                             display: true,
-                            precision: 0,
-                            backdropColor: 'rgba(255, 255, 255, 0.75)'
+                            precision: 0,  // Muestra solo valores enteros
+                            backdropColor: 'rgba(255, 255, 255, 0.75)'  // Color de fondo para los valores
                         },
                         pointLabels: {
                             display: true,
@@ -303,18 +349,20 @@ function getChartConfig(type, labels, data) {
             }
         };
         
-        // Botón de compartir
+        // Botón de compartir para todos los gráficos
         config.options.plugins.customButtons = {
             position: 'top',
             buttons: [{
                 text: '📤 Compartir',
                 onClick: async (chart) => {
                     try {
+                        // Convertir el canvas a imagen
                         const canvas = chart.canvas;
                         const imageData = canvas.toDataURL('image/png');
                         const blob = await (await fetch(imageData)).blob();
                         const file = new File([blob], 'estadisticas.png', { type: 'image/png' });
                         
+                        // Usar la API Web Share si está disponible
                         if (navigator.share) {
                             await navigator.share({
                                 files: [file],
@@ -322,7 +370,7 @@ function getChartConfig(type, labels, data) {
                                 text: 'Mira mis estadísticas de contadores'
                             });
                         } else {
-                            // Fallback for browsers that don't support sharing
+                            // Alternativa para navegadores que no soportan compartir
                             const link = document.createElement('a');
                             link.download = 'estadisticas.png';
                             link.href = imageData;
@@ -336,20 +384,21 @@ function getChartConfig(type, labels, data) {
         };
     });
 
-
+    // Configurar animaciones para todos los gráficos
     Object.values(configs).forEach(config => {
         if (!config.options) config.options = {};
         config.options.animation = {
-            duration: 1000, // Initial animation duration
+            duration: 1000, // Duración de la animación inicial
             onComplete: () => {
-                // After initial animation, disable subsequent animations
+                // Después de la animación inicial, desactivar animaciones posteriores
                 if (currentChart) {
                     currentChart.options.animation = false;
                 }
             }
         };
     });
-    // Merge base config with specific chart config
+    
+    // Combinar la configuración base con la configuración específica de cada gráfico
     Object.keys(configs).forEach(key => {
         configs[key].options = {
             ...baseConfig.options,
@@ -357,12 +406,18 @@ function getChartConfig(type, labels, data) {
         };
     });
 
+    // Devolver la configuración del tipo de gráfico solicitado
     return configs[type];
 }
 
+/**
+ * Inicializa todos los tipos de gráficos para un grupo específico
+ * @param {string} groupId - ID del grupo cuyos datos se mostrarán
+ */
 async function initializeAllCharts(groupId) {
     if (!auth.currentUser || !groupId) return;
     try {
+        // Obtener los contadores del grupo desde Firestore
         const countersRef = collection(db, 'users', auth.currentUser.uid, 'groups', groupId, 'counters');
         const querySnapshot = await getDocs(countersRef);
         const counters = [];
@@ -370,6 +425,7 @@ async function initializeAllCharts(groupId) {
             counters.push({ id: doc.id, ...doc.data() });
         });
 
+        // Extraer etiquetas (títulos) y valores de los contadores
         const labels = counters.map(counter => counter.title);
         const values = counters.map(counter => counter.count);
 
@@ -393,6 +449,7 @@ async function initializeAllCharts(groupId) {
             if (canvas) {
                 const ctx = canvas.getContext('2d');
                 const config = getChartConfig(type, labels, values);
+                
                 // Configuración especial para el gráfico de tendencia
                 if (type === 'trend') {
                     // Crear un dataset único que muestre la tendencia pero permita seleccionar contadores
@@ -490,6 +547,10 @@ async function initializeAllCharts(groupId) {
                 charts[type] = new Chart(ctx, config);
             }
         });
+        
+        // Añadir botón de compartir junto al selector de grupos
+        addShareButton();
+        
     } catch (error) {
         console.error('Error inicializando gráficos:', error);
     }
@@ -505,7 +566,111 @@ async function updateStatistics(groupId) {
     }
 }
 
-
-
 // Make sure to export the function
 export { updateStatistics };
+
+/**
+ * Añade un botón de compartir junto al selector de grupos
+ */
+function addShareButton() {
+    // Buscar el contenedor del selector de grupos
+    const selectorContainer = document.getElementById('statsGroupSelector').parentElement;
+    
+    // Eliminar botón existente para evitar duplicados
+    const existingButton = document.querySelector('.share-stats-btn');
+    if (existingButton) {
+        existingButton.remove();
+    }
+    
+    // Crear nuevo botón
+    const shareButton = document.createElement('button');
+    shareButton.className = 'btn btn-primary share-stats-btn';
+    shareButton.innerHTML = '<i class="fas fa-share-alt"></i> <span>Compartir</span>';
+    shareButton.title = 'Compartir gráfico actual';
+    
+    // Añadir evento de clic
+    shareButton.addEventListener('click', async () => {
+        // Obtener el gráfico actualmente visible
+        const activeTabId = document.querySelector('.tab-pane.active').id;
+        let chartType;
+        
+        switch (activeTabId) {
+            case 'distribution':
+                chartType = 'distribution';
+                break;
+            case 'trend':
+                chartType = 'trend';
+                break;
+            case 'pie':
+                chartType = 'pie';
+                break;
+            case 'radar':
+                chartType = 'radar';
+                break;
+            default:
+                chartType = 'distribution';
+        }
+        
+        const chart = charts[chartType];
+        
+        if (chart) {
+            try {
+                // Mostrar mensaje de carga
+                showShareMessage('Preparando imagen para compartir...');
+                
+                // Convertir el canvas a imagen
+                const canvas = chart.canvas;
+                const imageData = canvas.toDataURL('image/png');
+                const blob = await (await fetch(imageData)).blob();
+                const file = new File([blob], 'estadisticas.png', { type: 'image/png' });
+                
+                // Usar el API Web Share si está disponible
+                if (navigator.share) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Estadísticas de Contadores',
+                        text: 'Mira mis estadísticas de contadores'
+                    });
+                    showShareMessage('¡Compartido con éxito!');
+                } else {
+                    // Alternativa para navegadores que no soportan compartir
+                    const link = document.createElement('a');
+                    link.download = 'estadisticas.png';
+                    link.href = imageData;
+                    link.click();
+                    showShareMessage('Imagen descargada');
+                }
+            } catch (error) {
+                console.error('Error al compartir gráfico:', error);
+                showShareMessage('No se pudo compartir. Intenta de nuevo.');
+            }
+        }
+    });
+    
+    // Añadir botón junto al selector
+    selectorContainer.appendChild(shareButton);
+}
+
+/**
+ * Muestra un mensaje temporal al compartir
+ * @param {string} message - Mensaje a mostrar
+ */
+function showShareMessage(message) {
+    // Buscar mensaje existente o crear uno nuevo
+    let messageElement = document.querySelector('.share-message');
+    
+    if (!messageElement) {
+        messageElement = document.createElement('div');
+        messageElement.className = 'share-message';
+        document.body.appendChild(messageElement);
+    }
+    
+    // Actualizar el mensaje y mostrarlo
+    messageElement.textContent = message;
+    messageElement.classList.add('show');
+    
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+        messageElement.classList.remove('show');
+    }, 3000);
+}
