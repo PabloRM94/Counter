@@ -105,3 +105,7 @@ def test_switch_to_register(auth_test):
         auth_test: Fixture que proporciona una instancia de TestAuth
     """
     auth_test.test_switch_to_register()
+
+#cd d:\Trae\Counter
+#.venv\Scripts\activate
+#pytest tests\selenium\test_auth.py -v
