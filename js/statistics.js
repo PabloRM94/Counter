@@ -425,6 +425,19 @@ async function initializeAllCharts(groupId) {
             counters.push({ id: doc.id, ...doc.data() });
         });
 
+        // Ordenar los contadores por orden si existe la propiedad, o por título si no
+        counters.sort((a, b) => {
+            // Si ambos tienen propiedad order, ordenar por ella
+            if (a.order !== undefined && b.order !== undefined) {
+                return a.order - b.order;
+            }
+            // Si solo uno tiene order, el que tiene order va primero
+            if (a.order !== undefined) return -1;
+            if (b.order !== undefined) return 1;
+            // Si ninguno tiene order, ordenar por título alfabéticamente
+            return a.title.localeCompare(b.title);
+        });
+
         // Extraer etiquetas (títulos) y valores de los contadores
         const labels = counters.map(counter => counter.title);
         const values = counters.map(counter => counter.count);
