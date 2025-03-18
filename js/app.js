@@ -282,6 +282,7 @@ document.getElementById('saveEditCounterBtn').addEventListener('click', async fu
     const counterId = document.getElementById('editCounterId').value;
     const newTitle = document.getElementById('editCounterTitle').value.trim();
     const newColor = document.getElementById('editCounterColor').value;
+    const newCount = parseInt(document.getElementById('editCounterValue').value, 10);
     const currentGroupId = window.getCurrentGroupId ? window.getCurrentGroupId() : localStorage.getItem('lastVisitedGroupId');
     
     if (!counterId || !currentGroupId) {
@@ -294,11 +295,17 @@ document.getElementById('saveEditCounterBtn').addEventListener('click', async fu
         return;
     }
     
+    if (isNaN(newCount)) {
+        alert('Por favor, ingresa un valor numérico válido para el contador');
+        return;
+    }
+    
     try {
         await import('./counter.js').then(module => {
             module.updateCounter(currentGroupId, counterId, { 
                 title: newTitle,
-                color: newColor 
+                color: newColor,
+                count: newCount
             });
         });
         

@@ -147,6 +147,7 @@ async function loadCounters(groupId) {
                     document.getElementById('editCounterId').value = counter.id;
                     document.getElementById('editCounterTitle').value = counter.title;
                     document.getElementById('editCounterColor').value = counter.color || '#0d6efd';
+                    document.getElementById('editCounterValue').value = counter.count;
                 });
                 
                 countElement.addEventListener('click', () => {
